@@ -9,18 +9,47 @@
     "preview": "vite preview",
     "tauri": "tauri"
   },
+  "proxy": "http://localhost:3000",
   "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
+    "@hookform/resolvers": "^4.1.0",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@tailwindcss/vite": "^4.0.6",
+    "@tanstack/react-query": "^5.66.0",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.7.9",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.4",
+    "date-fns": "^4.1.0",
+    "emoji-mart": "^5.6.0",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.475.0",
+    "query-string": "^9.1.1",
+    "radix-ui": "^1.1.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2"
+    "react-hook-form": "^7.54.2",
+    "react-router-dom": "^7.1.5",
+    "shadcn": "^2.4.0-canary.6",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss": "^4.0.6",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^22.13.4",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "~5.6.2",
-    "vite": "^6.0.3",
-    "@tauri-apps/cli": "^2"
+    "vite": "^6.0.3"
   }
 }
