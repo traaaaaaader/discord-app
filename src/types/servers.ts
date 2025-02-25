@@ -63,4 +63,9 @@ export type ServerWithMembersWithUsersAndChannels = Server & {
   channels: Channel[];
 };
 
+export type ServerWithMembersAndChannels = Server & {
+  members: Member[];
+  channels: Channel[];
+};
+
 export type MembersWithUser = (Member & { user: User })[];

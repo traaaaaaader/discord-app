@@ -15,6 +15,8 @@ import { ServerChannelsSidebar } from "@/components/server/server-channels-sideb
 import { ServerMembersSidebar } from "@/components/server/server-members-sidebar";
 
 import Spinner from "@/components/ui/Spinner";
+import { ChatMessages } from "../components/chat/chat-messages";
+import { ChatInput } from "../components/chat/chat-input";
 
 const ChannelPage = () => {
   const params = useParams();
@@ -69,7 +71,7 @@ const ChannelPage = () => {
         <ServerMembersSidebar server={server} />
       </div>
       <main className="h-full md:px-60">
-        <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
+        <div className="bg-white dark:bg-[#313338] flex flex-col h-screen">
           <ChatHeader
             name={channel.name}
             serverId={channel.serverId}
@@ -77,13 +79,11 @@ const ChannelPage = () => {
           />
           {channel.type == ChannelType.TEXT && (
             <>
-              {/* <ChatMessages
+              <ChatMessages
                 member={member}
                 name={channel.name}
                 chatId={channel.id}
                 type="channel"
-                apiUrl="/api/messages"
-                socketUrl="/api/socket/messages"
                 socketQuery={{
                   channelId: channel.id,
                   serverId: channel.serverId,
@@ -94,12 +94,12 @@ const ChannelPage = () => {
               <ChatInput
                 name={channel.name}
                 type="channel"
-                apiUrl="/api/socket/messages"
+                apiUrl="messages"
                 query={{
                   channelId: channel.id,
                   serverId: channel.serverId,
                 }}
-              /> */}
+              />
             </>
           )}
           {/* {channel.type === ChannelType.AUDIO && (

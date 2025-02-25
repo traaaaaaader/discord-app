@@ -165,7 +165,7 @@ const RegisterPage = () => {
                   Уже зарегистрированы?
                 </NavLink>
               </CardDescription>
-              <Button className="ml-2" variant="primary" disabled={isLoading}>
+              <Button className="ml-4" variant="primary" disabled={isLoading}>
                 Зарегистрироваться
               </Button>
             </CardFooter>

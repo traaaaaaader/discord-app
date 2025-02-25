@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import AuthApiClient from "@/api/auth-api-client";
+import apiClient from "@/api/api-client";
 
 export const DirectMessagesService = {
   sendMessage: async (
@@ -13,7 +13,7 @@ export const DirectMessagesService = {
       formData.append("fileUrl", fileUrl);
     }
 
-    const response: AxiosResponse = await AuthApiClient.post(
+    const response: AxiosResponse = await apiClient.post(
       `/direct-messages?conversationId=${conversationId}`,
       formData
     );
@@ -25,7 +25,7 @@ export const DirectMessagesService = {
     conversationId: string,
     content: string
   ) => {
-    const response: AxiosResponse = await AuthApiClient.patch(
+    const response: AxiosResponse = await apiClient.patch(
       `/direct-messages?directMessageId=${directMessageId}&conversationId=${conversationId}`,
       { content }
     );
@@ -33,7 +33,7 @@ export const DirectMessagesService = {
   },
 
   deleteMessage: async (directMessageId: string, conversationId: string) => {
-    await AuthApiClient.delete(
+    await apiClient.delete(
       `/direct-messages?directMessageId=${directMessageId}&conversationId=${conversationId}`
     );
   },

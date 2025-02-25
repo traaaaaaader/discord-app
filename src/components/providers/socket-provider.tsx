@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 type SocketContextType = {
-  socket: any | null;
+  socket: Socket | null;
   isConnected: boolean;
 };
 
@@ -20,18 +20,20 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConected] = useState(false);
 
   useEffect(() => {
-    const socketInstance = io("http://localhost:3000", {
+    const socketInstance = io("http://localhost:3001", {
       addTrailingSlash: false,
+      path: "/socket/io",
     });
 
+    
     socketInstance.on("connect", () => {
       setIsConected(true);
     });
-
+    
     socketInstance.on("disconnect", () => {
       setIsConected(false);
     });
-
+    
     setSocket(socketInstance);
 
     return () => {

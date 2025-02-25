@@ -27,7 +27,7 @@ export const FileUpload = ({value, onChange }: FileUploadProps) => {
       const url = await FilesService.uploadFile(file);
       setFileUrl(url);
       onChange(url);
-      setExtesion(url.split(".").pop())
+      setExtesion(url.split(".").pop() ?? "");
     } catch(error) {
       console.log("Error", error);
       alert("Ошибка загрузки файла");

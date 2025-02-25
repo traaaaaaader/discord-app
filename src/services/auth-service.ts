@@ -1,6 +1,5 @@
 import { AxiosResponse } from "axios";
-import defaultApiClient from "@/api/default-api-client";
-import authApiClient from "@/api/auth-api-client";
+import apiClient from "@/api/api-client";
 
 export const AuthService = {
   register: async (
@@ -15,7 +14,7 @@ export const AuthService = {
     formData.append("password", password);
     formData.append("imageUrl", imageUrl);
 
-    const response: AxiosResponse = await authApiClient.post(
+    const response: AxiosResponse = await apiClient.post(
       "/auth/register",
       formData
     );
@@ -24,7 +23,7 @@ export const AuthService = {
   },
 
   login: async (email: string, password: string) => {
-    const response: AxiosResponse = await authApiClient.post("/auth/login", {
+    const response: AxiosResponse = await apiClient.post("/auth/login", {
       email,
       password,
     });
@@ -34,7 +33,7 @@ export const AuthService = {
 
   refresh: async () => {
     try {
-      const response: AxiosResponse = await authApiClient.post("/auth/refresh");
+      const response: AxiosResponse = await apiClient.post("/auth/refresh");
       return response.data;
     } catch (error) {
       console.log("Error refresh token");
@@ -43,16 +42,16 @@ export const AuthService = {
   },
 
   logout: async () => {
-    await authApiClient.post("/auth/logout");
+    await apiClient.post("/auth/logout");
   },
 
   google: async () => {
-    const response = await authApiClient.get("/auth/google");
+    const response = await apiClient.get("/auth/google");
     return response.data;
   },
 
   getUser: async () => {
-    const response = await authApiClient.get("/auth/get");
+    const response = await apiClient.get("/auth/get");
     return response.data;
   },
 };

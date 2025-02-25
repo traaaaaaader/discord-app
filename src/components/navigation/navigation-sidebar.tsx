@@ -1,15 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Spinner from "@/components/ui/Spinner";
 
 import { NavigationActionComponent } from "./navigation-action";
 import { NavigationItem } from "./navigation-item";
 
-import { ChannelType, Server } from "@/types/servers";
 import { ServersService } from "@/services/servers-service";
-import Spinner from "../ui/Spinner";
+import { ChannelType, Server } from "@/types/servers";
 
 export const NavigationSideBar = () => {
   const [servers, setServers] = useState<Server[]>([]);

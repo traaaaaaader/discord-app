@@ -121,7 +121,7 @@ const LoginPage = () => {
                   Зарегистрироваться
                 </NavLink>
               </CardDescription>
-              <Button className="ml-2" variant="primary" disabled={isLoading}>
+              <Button className="ml-4" variant="primary" disabled={isLoading}>
                 Войти
               </Button>
             </CardFooter>

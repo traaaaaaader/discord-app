@@ -1,9 +1,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import qs from "query-string";
-import { useNavigate } from "react-router-dom";
+
 
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -25,7 +23,6 @@ const formSchema = z.object({
 
 export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const { onOpen } = useModal();
-  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,15 +45,8 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
             query.conversationId,
             values.content
           );
-      // const url = qs.stringifyUrl({
-      // 	url: apiUrl,
-      // 	query,
-      // })
-
-      // await axios.post(url, values)
 
       form.reset();
-      navigate(0);
     } catch (error) {
       console.log(error);
     }

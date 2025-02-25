@@ -1,10 +1,17 @@
 import { AxiosResponse } from "axios";
-import AuthApiClient from "@/api/auth-api-client";
-import { ChannelType } from "../types/servers";
+import apiClient from "@/api/api-client";
+import {
+  Channel,
+  ChannelType,
+  ServerWithMembersWithUsersAndChannels,
+} from "@/types/servers";
 
 export const ChannelsService = {
-  getChannel: async (channelId: string, serverId?: string) => {
-    const response: AxiosResponse = await AuthApiClient.get(
+  getChannel: async (
+    channelId: string,
+    serverId?: string
+  ): Promise<Channel> => {
+    const response: AxiosResponse = await apiClient.get(
       `/channels?channelId=${channelId}`,
       {
         params: {
@@ -15,8 +22,8 @@ export const ChannelsService = {
     return response.data;
   },
 
-  getChannels: async (serverId: string) => {
-    const response: AxiosResponse = await AuthApiClient.get("/channels", {
+  getChannels: async (serverId: string): Promise<Channel[]> => {
+    const response: AxiosResponse = await apiClient.get("/channels", {
       params: {
         serverId,
       },
@@ -24,8 +31,12 @@ export const ChannelsService = {
     return response.data;
   },
 
-  createChannel: async (serverId: string, name: string, type: ChannelType) => {
-    const response: AxiosResponse = await AuthApiClient.post(
+  createChannel: async (
+    serverId: string,
+    name: string,
+    type: ChannelType
+  ): Promise<ServerWithMembersWithUsersAndChannels> => {
+    const response: AxiosResponse = await apiClient.post(
       `/channels?serverId=${serverId}`,
       { name, type }
     );
@@ -37,8 +48,8 @@ export const ChannelsService = {
     serverId: string,
     name: string,
     type: ChannelType
-  ) => {
-    const response: AxiosResponse = await AuthApiClient.patch(
+  ): Promise<ServerWithMembersWithUsersAndChannels> => {
+    const response: AxiosResponse = await apiClient.patch(
       `/channels/${channelId}?serverId=${serverId}`,
       { name, type }
     );
@@ -46,6 +57,6 @@ export const ChannelsService = {
   },
 
   deleteChannel: async (channelId: string, serverId: string) => {
-    await AuthApiClient.delete(`/channels/${channelId}?serverId=${serverId}`);
+    await apiClient.delete(`/channels/${channelId}?serverId=${serverId}`);
   },
 };

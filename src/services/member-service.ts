@@ -1,17 +1,17 @@
 import { AxiosResponse } from "axios";
-import AuthApiClient from "@/api/auth-api-client";
+import apiClient from "@/api/api-client";
 import { Member, MemberRole, MembersWithUser } from "@/types/servers";
 
 export const MembersService = {
   getMember: async (memberId: string): Promise<Member> => {
-    const response: AxiosResponse = await AuthApiClient.get(
+    const response: AxiosResponse = await apiClient.get(
       `/members/${memberId}`
     );
     return response.data;
   },
 
   getMembers: async (serverId: string): Promise<MembersWithUser> => {
-    const response: AxiosResponse = await AuthApiClient.get(
+    const response: AxiosResponse = await apiClient.get(
       `/members`,{
         params: {
           serverId,
@@ -22,7 +22,7 @@ export const MembersService = {
   },
 
   deleteMember: async (serverId: string, memberId: string) => {
-    return await AuthApiClient.delete(`/members/${memberId}?serverId=${serverId}`);
+    return await apiClient.delete(`/members/${memberId}?serverId=${serverId}`);
   },
 
   updateMember: async (
@@ -30,7 +30,7 @@ export const MembersService = {
     memberId: string,
     role: MemberRole
   ) => {
-    const response: AxiosResponse = await AuthApiClient.patch(
+    const response: AxiosResponse = await apiClient.patch(
       `/members/${memberId}?serverId=${serverId}`,
       role
     );

@@ -9,14 +9,22 @@ interface NavigarionItemProps {
   name: string;
 }
 
-export const NavigationItem = ({ serverId, channelId, imageUrl, name }: NavigarionItemProps) => {
+export const NavigationItem = ({
+  serverId,
+  channelId,
+  imageUrl,
+  name,
+}: NavigarionItemProps) => {
   const params = useParams();
 
   const url = imageUrl || "";
 
   return (
     <ActionTooltip side="right" align="center" label={name}>
-      <NavLink to={`/servers/${serverId}/channels/${channelId}`} className="group relative flex items-center">
+      <NavLink
+        to={`/servers/${serverId}/channels/${channelId}`}
+        className="group relative flex items-center"
+      >
         <div
           className={cn(
             "absolute left-0 bg-primary rounded-r-full transition-all w-[4px]",

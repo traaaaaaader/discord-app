@@ -24,7 +24,8 @@ export const DeleteMessageModal = () => {
   const onClick = async () => {
     try {
       setIsLoading(true);
-      if (!query || !query.messageId || !query.channelId || !query.servrId)
+      console.log("query = ", query);
+      if (!query || !query.messageId || !query.channelId || !query.serverId)
         throw new Error(
           "Message ID, Channel ID and Server ID are required to delete a message."
         );

@@ -1,22 +1,30 @@
 import { AxiosResponse } from "axios";
-import authApiClient from "@/api/auth-api-client";
-import { Server, ServerWithMembersWithUsersAndChannels } from "@/types/servers";
+import apiClient from "@/api/api-client";
+import {
+  Server,
+  ServerWithMembersAndChannels,
+  ServerWithMembersWithUsersAndChannels,
+} from "@/types/servers";
 
 export const ServersService = {
-  getServer: async (serverId: string): Promise<ServerWithMembersWithUsersAndChannels> => {
-    const response: AxiosResponse = await authApiClient.get<Server>(
+  getServer: async (
+    serverId: string
+  ): Promise<ServerWithMembersWithUsersAndChannels> => {
+    const response: AxiosResponse = await apiClient.get<Server>(
       `/servers/${serverId}`
     );
     return response.data;
   },
 
-  getServers: async (): Promise<Server[]> => {
-    const response = await authApiClient.get<Server[]>("/servers");
+  getServers: async (): Promise<ServerWithMembersAndChannels[]> => {
+    const response = await apiClient.get<ServerWithMembersAndChannels[]>(
+      "/servers"
+    );
     return response.data;
   },
 
   createServer: async (name: string, imageUrl: string): Promise<Server> => {
-    const response: AxiosResponse = await authApiClient.post("/servers", {
+    const response: AxiosResponse = await apiClient.post("/servers", {
       name,
       imageUrl,
     });
@@ -28,18 +36,18 @@ export const ServersService = {
     name: string,
     imageUrl: string
   ): Promise<Server> => {
-    console.group(serverId, name, imageUrl)
-    const response: AxiosResponse = await authApiClient.patch(
+    console.group(serverId, name, imageUrl);
+    const response: AxiosResponse = await apiClient.patch(
       `/servers/${serverId}`,
       {
         name,
-        imageUrl
+        imageUrl,
       }
     );
     return response.data;
   },
 
   deleteServer: async (serverId: string) => {
-    await authApiClient.delete(`/servers/${serverId}`);
+    await apiClient.delete(`/servers/${serverId}`);
   },
 };
