@@ -10,11 +10,21 @@ import { NavigationActionComponent } from "./navigation-action";
 import { NavigationItem } from "./navigation-item";
 
 import { ServersService } from "@/services/servers-service";
-import { ChannelType, Server } from "@/types/servers";
+import { ChannelType, Server, User } from "@/types/servers";
+import { UserAvatar } from "@/components/user-avatar";
+
+import { useModal } from "@/hooks/use-modal-store";
 
 export const NavigationSideBar = () => {
-  const [servers, setServers] = useState<Server[]>([]);
+  const { onOpen } = useModal();
   const navigate = useNavigate();
+
+  const [servers, setServers] = useState<Server[]>([]);
+
+  const user: User = JSON.parse(localStorage.user);
+  if (!user) {
+    navigate("/auth/login");
+  }
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -61,13 +71,10 @@ export const NavigationSideBar = () => {
       </ScrollArea>
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
         <ModeToggle />
-        {/* <UserButton
-          appearance={{
-            elements: {
-              avatarBox: "h-[48px] w-[48px]",
-            },
-          }}
-        /> */}
+        <UserAvatar
+          src={user.imageUrl}
+          onClick={() => onOpen("editUser", { user: { ...user } })}
+        />
       </div>
     </div>
   );

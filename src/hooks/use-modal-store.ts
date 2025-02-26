@@ -1,12 +1,13 @@
-import { Channel, ChannelType, Server, ServerWithMembersWithUsersAndChannels } from "@/types/servers";
+import { Channel, ChannelType, ServerWithMembersWithUsersAndChannels, User } from "@/types/servers";
 import {create} from "zustand";
 
-export type ModalType = "createServer" | "invite" | "editServer" | "members" | "createChannel" | "leaveServer" | "deleteServer" | "deleteChannel" | "editChannel" | "messageFile" | "deleteMessage";
+export type ModalType = "createServer" | "invite" | "editServer" | "members" | "createChannel" | "leaveServer" | "deleteServer" | "deleteChannel" | "editChannel" | "messageFile" | "deleteMessage" | "editUser";
 
 interface ModalData {
 	server? : ServerWithMembersWithUsersAndChannels;
 	channel?: Channel;
 	channelType?: ChannelType;
+	user?: User;
 	apiUrl?: string;
 	query?: Record<string, any>;
 }

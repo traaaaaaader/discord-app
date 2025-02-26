@@ -20,7 +20,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConected] = useState(false);
 
   useEffect(() => {
-    const socketInstance = io("http://localhost:3001", {
+    console.log(import.meta.env.VITE_WEBSOCKET_URL)
+    const socketInstance = io(import.meta.env.VITE_WEBSOCKET_URL, {
       addTrailingSlash: false,
       path: "/socket/io",
     });

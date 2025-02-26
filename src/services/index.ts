@@ -5,3 +5,4 @@ export { FilesService } from "./files-service";
 export { MembersService } from "./member-service";
 export { MessagesService } from "./messages-service";
 export { ServersService } from "./servers-service";
+export { UsersService } from "./users-service";

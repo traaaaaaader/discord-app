@@ -87,19 +87,6 @@ export const ChatMessages = ({
     <div
       ref={chatRef}
       className="flex flex-col flex-1 py-4 overflow-y-auto scrollbar"
-      // scrollbar-thin 
-      // scrollbar-thumb-zinc-400 
-      // scrollbar-track-zinc-100 
-      // dark:scrollbar-thumb-zinc-600 
-      // dark:scrollbar-track-zinc-800 
-      // hover:scrollbar-thumb-zinc-500
-      // dark:hover:scrollbar-thumb-zinc-500
-      // scrollbar-thumb-rounded-full scrollbar-track-rounded-full
-      // [&::-webkit-scrollbar-thumb]:rounded
-      // [&::-webkit-scrollbar-thumb]:bg-zinc-400
-      // [&::-webkit-scrollbar-track]:rounded
-      // dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600
-      // scrollbar-corner-hidden
     >
       {!hasNextPage && <div className="flex-1" />}
       {!hasNextPage && <ChatWelcome type={type} name={name} />}

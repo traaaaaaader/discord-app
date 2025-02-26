@@ -49,9 +49,4 @@ export const AuthService = {
     const response = await apiClient.get("/auth/google");
     return response.data;
   },
-
-  getUser: async () => {
-    const response = await apiClient.get("/auth/get");
-    return response.data;
-  },
 };

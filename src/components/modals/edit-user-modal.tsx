@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,22 +24,25 @@ import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
 
 import { useModal } from "@/hooks/use-modal-store";
-import { ServersService } from "@/services";
+import { useEffect } from "react";
+import { UsersService } from "@/services";
 
 const formSchema = z.object({
   name: z.string().min(1, {
-    message: "Server name is required.",
+    message: "User name is required.",
   }),
   imageUrl: z.string().min(1, {
-    message: "Server image is required.",
+    message: "Avatar is required.",
   }),
 });
 
-export const CreateServerModal = () => {
-  const { isOpen, onClose, type } = useModal();
+export const EditUserModal = () => {
+  const { isOpen, onClose, type, data } = useModal();
   const navigate = useNavigate();
 
-  const isModalOpen = isOpen && type === "createServer";
+  const { user } = data;
+
+  const isModalOpen = isOpen && type === "editUser";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -50,11 +52,22 @@ export const CreateServerModal = () => {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      form.setValue("name", user.name);
+      form.setValue("imageUrl", user.imageUrl);
+    }
+  }, [user, form]);
+
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await ServersService.createServer(values.name, values.imageUrl);
+      const user = await UsersService.edit(values.name, values.imageUrl);
+
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
 
       form.reset();
       navigate(0);
@@ -74,12 +87,8 @@ export const CreateServerModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Customize your server
+            Edit your profile
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
-            Give yor servre personality with a name and an image. You can
-            alwayas change it later.
-          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -106,13 +115,13 @@ export const CreateServerModal = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                      Server name
+                      User name
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
                         className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
-                        placeholder="Enter server name"
+                        placeholder="Enter new user name"
                         {...field}
                       />
                     </FormControl>
@@ -123,7 +132,7 @@ export const CreateServerModal = () => {
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant="primary" disabled={isLoading}>
-                Create
+                Update
               </Button>
             </DialogFooter>
           </form>

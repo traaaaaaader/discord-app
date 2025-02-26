@@ -1,3 +1,4 @@
+import { NavLink, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,11 +22,12 @@ import {
 import { FileUpload } from "@/components/file-upload";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { IconBrandGoogleFilled } from "@tabler/icons-react";
+
 import { AuthService } from "../services/auth-service";
-import { NavLink, useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
-  name: z.string().min(5, {
+  name: z.string().min(1, {
     message: "Name is required.",
   }),
   email: z.string().email({
@@ -72,7 +74,7 @@ const RegisterPage = () => {
 
   return (
     <Card>
-      <CardContent className="rounded-lg bg-white text-black p-0 overflow-hidden">
+      <CardContent className="rounded-lg bg-white text-black p-0 overflow-hidden min-w-md">
         <CardHeader className="pt-8 px-6">
           <CardTitle className="text-2xl text-center font-bold">
             Создать учетную запись
@@ -156,16 +158,28 @@ const RegisterPage = () => {
                 )}
               />
             </div>
-            <CardFooter className="bg-gray-100 px-6 py-4">
-              <CardDescription className="text-center text-zinc-500">
-                <NavLink
-                  to={"/auth/login"}
-                  className="text-indigo-500 dark:text-indigo-400"
-                >
-                  Уже зарегистрированы?
-                </NavLink>
-              </CardDescription>
-              <Button className="ml-4" variant="primary" disabled={isLoading}>
+            <CardFooter className="bg-gray-100 px-6 py-4 flex flex-col">
+              <div className="flex justify-between items-center mb-2 mx-auto w-full">
+                <CardDescription className="text-center text-zinc-500">
+                  <NavLink
+                    to={"/auth/login"}
+                    className="text-indigo-500 dark:text-indigo-400"
+                  >
+                    Уже зарегистрированы?
+                  </NavLink>
+                </CardDescription>
+                <Button variant="primary" disabled={isLoading}>
+                  Зарегистрироваться
+                </Button>
+              </div>
+              <Button
+                type="button"
+                variant="google"
+                onClick={() => {
+                  window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL ?? "";
+                }}
+              >
+                <IconBrandGoogleFilled className="mr-2" />
                 Зарегистрироваться
               </Button>
             </CardFooter>
