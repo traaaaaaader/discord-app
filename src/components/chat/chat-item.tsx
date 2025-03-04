@@ -2,8 +2,8 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { MemberRole, User } from "@/types/chat";
-import { Member } from "@/types/servers";
+import { MemberRole, User } from "@/utils/types/chat";
+import { Member } from "@/utils/types/servers";
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -127,7 +127,9 @@ export const ChatItem = ({
           onClick={onMemberClick}
           className="cursor-pointer hover:drop-shadow-md transition"
         >
-          {/* <UserAvatar src={member.user.imageUrl} /> */}
+          <UserAvatar
+          src={member.user.imageUrl}
+        />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">

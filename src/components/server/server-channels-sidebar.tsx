@@ -9,7 +9,7 @@ import {
   ChannelType,
   MemberRole,
   ServerWithMembersWithUsersAndChannels,
-} from "@/types/servers";
+} from "@/utils/types/servers";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -109,6 +109,7 @@ export const ServerChannelsSidebar = ({
             <ServerSection
               sectionType="channels"
               channelType={ChannelType.TEXT}
+              server={server}
               role={role}
               label="Text Channels"
             />
@@ -129,6 +130,7 @@ export const ServerChannelsSidebar = ({
             <ServerSection
               sectionType="channels"
               channelType={ChannelType.AUDIO}
+              server={server}
               role={role}
               label="Voice Channels"
             />
@@ -149,6 +151,7 @@ export const ServerChannelsSidebar = ({
             <ServerSection
               sectionType="channels"
               channelType={ChannelType.VIDEO}
+              server={server}
               role={role}
               label="Video Channels"
             />

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { useSocket } from "@/components/providers/socket-provider";
 import { useQueryClient } from "@tanstack/react-query";
-import { Member, Message, User } from "@/types/chat";
+import { Member, Message, User } from "@/utils/types/chat";
 
 type ChatSocketProps = {
   addKey: string;

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MemberRole } from "@/types/servers";
+import { MemberRole } from "@/utils/types/servers";
 
 import {
   Dialog,

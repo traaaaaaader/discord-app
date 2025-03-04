@@ -3,7 +3,7 @@ import {
 	ChannelType,
 	MemberRole,
 	ServerWithMembersWithUsersAndChannels
-} from "@/types/servers";
+} from "@/utils/types/servers";
 import { Edit, Hash, Lock, Mic, Trash, Video } from "lucide-react";
 
 import { cn } from "@/lib/utils";

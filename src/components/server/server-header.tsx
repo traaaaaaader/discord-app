@@ -1,4 +1,4 @@
-import { MemberRole, ServerWithMembersWithUsersAndChannels } from "@/types/servers";
+import { MemberRole, ServerWithMembersWithUsersAndChannels } from "@/utils/types/servers";
 
 import {
 	ChevronDown,

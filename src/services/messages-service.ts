@@ -7,15 +7,11 @@ export const MessagesService = {
     channelId: string,
     serverId: string,
     content: string,
-    fileUrl?: File
+    fileUrl?: string
   ) => {
-    const formData = new FormData();
-    formData.append("content", content);
-    if (fileUrl) formData.append("fileUrl", fileUrl);
-
     const response: AxiosResponse = await apiClient.post(
       `/messages?channelId=${channelId}&serverId=${serverId}`,
-      formData
+      { content, fileUrl }
     );
     return response.data;
   },
@@ -23,7 +19,7 @@ export const MessagesService = {
   getMessages: async (
     cursor: string | undefined,
     paramKey: string,
-    paramValue: string,
+    paramValue: string
   ) => {
     const url = qs.stringifyUrl(
       {
@@ -35,7 +31,7 @@ export const MessagesService = {
       },
       { skipNull: true }
     );
-  
+
     const response: AxiosResponse = await apiClient.get(url);
     return response.data;
   },

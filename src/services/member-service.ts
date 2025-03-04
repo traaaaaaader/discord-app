@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import apiClient from "@/api/api-client";
-import { Member, MemberRole, MembersWithUser } from "@/types/servers";
+import { Member, MemberRole, MembersWithUser } from "@/utils/types/servers";
 
 export const MembersService = {
   getMember: async (memberId: string): Promise<Member> => {

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   ChannelType,
   ServerWithMembersWithUsersAndChannels,
-} from "@/types/servers";
+} from "@/utils/types/servers";
 import { ServersService } from "@/services";
 
 import { ChatHeader } from "@/components/chat/chat-header";
@@ -52,7 +52,7 @@ const ChannelPage = () => {
   }, [navigate, serverId]);
 
   if (!server) {
-    return <Spinner />;
+    return navigate("/");
   }
 
   const channel = server.channels.find((channel) => channel.id === channelId);

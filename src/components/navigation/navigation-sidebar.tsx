@@ -10,7 +10,7 @@ import { NavigationActionComponent } from "./navigation-action";
 import { NavigationItem } from "./navigation-item";
 
 import { ServersService } from "@/services/servers-service";
-import { ChannelType, Server, User } from "@/types/servers";
+import { ChannelType, Server, User } from "@/utils/types/servers";
 import { UserAvatar } from "@/components/user-avatar";
 
 import { useModal } from "@/hooks/use-modal-store";

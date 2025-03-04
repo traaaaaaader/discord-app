@@ -2,20 +2,18 @@ import { FileIcon, X } from "lucide-react";
 
 import { Input } from "./ui/input";
 import { useState } from "react";
-import { FilesService } from "../services/files-service";
+import { FilesService } from "@/services/files-service";
+import { imageExtensions } from "@/utils/image-extension";
 
 interface FileUploadProps {
   value: string;
   onChange: (url?: string) => void;
 }
 
-const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
-
-export const FileUpload = ({value, onChange }: FileUploadProps) => {
+export const FileUpload = ({ value, onChange }: FileUploadProps) => {
   const [fileUrl, setFileUrl] = useState(value);
   const [extension, setExtesion] = useState(fileUrl.split(".").pop() ?? "");
   const [loading, setLoading] = useState(false);
-
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -23,33 +21,33 @@ export const FileUpload = ({value, onChange }: FileUploadProps) => {
     const file = event.target.files?.[0];
     if (!file) return;
     setLoading(true);
-    try{
+    try {
       const url = await FilesService.uploadFile(file);
       setFileUrl(url);
       onChange(url);
       setExtesion(url.split(".").pop() ?? "");
-    } catch(error) {
+    } catch (error) {
       console.log("Error", error);
       alert("Ошибка загрузки файла");
-    }finally {
+    } finally {
       setLoading(false);
-    }    
+    }
   };
 
   const handleFileDelete = async () => {
-    try{
+    try {
       const fileName = fileUrl.split("/").pop() ?? "";
-      console.log(fileName)
+      console.log(fileName);
       await FilesService.deleteFile(fileName);
       setFileUrl("");
       onChange("");
-    } catch(error) {
+    } catch (error) {
       console.log("Error", error);
       alert("Ошибка удаления файла");
-    }finally {
+    } finally {
       setLoading(false);
-    }    
-  }
+    }
+  };
 
   if (fileUrl && imageExtensions.includes(extension)) {
     return (
@@ -57,7 +55,7 @@ export const FileUpload = ({value, onChange }: FileUploadProps) => {
         <img src={fileUrl} alt="Upload" className="rounded-full absolute" />
         <button
           onClick={handleFileDelete}
-          className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm"
+          className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm cursor-pointer"
           type="button"
         >
           <X className="h-4 w-4" />
@@ -80,7 +78,7 @@ export const FileUpload = ({value, onChange }: FileUploadProps) => {
         </a>
         <button
           onClick={handleFileDelete}
-          className="bg-rose-500 text-white p-1 rounded-full absolute -top-2 -right-2 shadow-sm"
+          className="bg-rose-500 text-white p-1 rounded-full absolute -top-2 -right-2 shadow-sm cursor-pointer"
           type="button"
         >
           <X className="h-4 w-4" />
@@ -89,7 +87,5 @@ export const FileUpload = ({value, onChange }: FileUploadProps) => {
     );
   }
 
-  return (
-    <Input type="file" onChange={handleFileChange} disabled={loading} />
-  );
+  return <Input type="file" onChange={handleFileChange} disabled={loading} />;
 };

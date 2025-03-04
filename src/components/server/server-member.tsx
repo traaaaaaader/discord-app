@@ -1,5 +1,5 @@
 import { ShieldAlert, ShieldCheck } from "lucide-react";
-import { Member, MemberRole, User } from "@/types/servers";
+import { Member, MemberRole, User } from "@/utils/types/servers";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { cn } from "@/lib/utils";

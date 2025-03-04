@@ -1,7 +1,7 @@
 import { Fragment, useRef, ElementRef } from "react";
 import { format } from "date-fns";
-import { Message, User } from "@/types/chat";
-import { Member } from "@/types/servers";
+import { Message, User } from "@/utils/types/chat";
+import { Member } from "@/utils/types/servers";
 import { Loader2, ServerCrash } from "lucide-react";
 
 import { useChatQuery } from "@/hooks/use-chat-query";
@@ -10,7 +10,7 @@ import { ChatWelcome } from "./chat-welcome";
 import { ChatItem } from "./chat-item";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 
-const DATE_FORMAT = "d MM yyyy, HH:mm";
+const DATE_FORMAT = "dd-MM-yyyy, HH:mm";
 
 type MessageWithMemberWithUser = Message & {
   member: Member & {

@@ -4,7 +4,7 @@ import {
   Server,
   ServerWithMembersAndChannels,
   ServerWithMembersWithUsersAndChannels,
-} from "@/types/servers";
+} from "@/utils/types/servers";
 
 export const ServersService = {
   getServer: async (

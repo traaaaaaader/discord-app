@@ -4,7 +4,7 @@ import {
   Channel,
   ChannelType,
   ServerWithMembersWithUsersAndChannels,
-} from "@/types/servers";
+} from "@/utils/types/servers";
 
 export const ChannelsService = {
   getChannel: async (

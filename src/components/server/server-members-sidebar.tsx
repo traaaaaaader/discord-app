@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ServerSection } from "./server-section";
 import { ServerMember } from "./server-member";
 
-import { Member, ServerWithMembersWithUsersAndChannels, User } from "@/types/servers";
+import { Member, ServerWithMembersWithUsersAndChannels, User } from "@/utils/types/servers";
 
 interface ServerChannelsSidebarProps {
   server: ServerWithMembersWithUsersAndChannels;

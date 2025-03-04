@@ -1,5 +1,5 @@
 import { Plus, Settings } from "lucide-react";
-import { ChannelType, MemberRole, ServerWithMembersWithUsersAndChannels } from "@/types/servers";
+import { ChannelType, MemberRole, ServerWithMembersWithUsersAndChannels } from "@/utils/types/servers";
 
 import { ActionTooltip } from "@/components/action-tooltip";
 import { useModal } from "@/hooks/use-modal-store";
@@ -30,7 +30,7 @@ export const ServerSection = ({
 			{role !== MemberRole.GUEST && sectionType === "channels" && (
 				<ActionTooltip label="Create Channel" side="top">
 					<button 
-						onClick={() => onOpen("createChannel", { channelType })}
+						onClick={() => onOpen("createChannel", { channelType, server })}
 						className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
 					>
 						<Plus className="h-4 w-4"/>

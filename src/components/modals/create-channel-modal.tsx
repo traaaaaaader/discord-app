@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ChannelType } from "@/types/servers";
+import { ChannelType } from "@/utils/types/servers";
 
 import {
   Dialog,
