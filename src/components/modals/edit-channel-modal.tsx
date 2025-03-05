@@ -28,21 +28,21 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { useEffect } from "react";
 import { ChannelsService } from "@/services";
 
 const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Channel name is required.",
-  }).refine(
-    name => name !== "general",
-    {
-      message: "Channel name cannot be 'general'"
-    }
-  ),
-  type: z.nativeEnum(ChannelType)
+  name: z
+    .string()
+    .min(1, {
+      message: "Channel name is required.",
+    })
+    .refine((name) => name !== "general", {
+      message: "Channel name cannot be 'general'",
+    }),
+  type: z.nativeEnum(ChannelType),
 });
 
 export const EditChannelModal = () => {
@@ -61,7 +61,7 @@ export const EditChannelModal = () => {
   });
 
   useEffect(() => {
-    if(channel){
+    if (channel) {
       form.setValue("name", channel.name);
       form.setValue("type", channel.type);
     }
@@ -71,10 +71,18 @@ export const EditChannelModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      if (!channel || !channel?.id || !server || !server?.id)
-        throw new Error("Server ID and Channel ID are required to edit a channel.");
+      if (!channel || !channel?.id || !server || !server?.id) {
+        throw new Error(
+          "Server ID and Channel ID are required to edit a channel."
+        );
+      }
 
-      await ChannelsService.updateChannel(channel?.id, server?.id, values.name, values.type);
+      await ChannelsService.updateChannel(
+        channel?.id,
+        server?.id,
+        values.name,
+        values.type
+      );
 
       form.reset();
       navigate(0);
@@ -123,36 +131,32 @@ export const EditChannelModal = () => {
               <FormField
                 control={form.control}
                 name="type"
-                render={({field}) => (
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Channel Type
-                    </FormLabel>
+                    <FormLabel>Channel Type</FormLabel>
                     <Select
                       disabled={isLoading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger
-                          className="bg-zinc-300/50 border-0 focus:ring-0 text-black ring-offset-0 focus:ring-offset-0 capitalize outline-none"
-                        >
-                          <SelectValue placeholder="Select a channel type"/>
+                        <SelectTrigger className="bg-zinc-300/50 border-0 focus:ring-0 text-black ring-offset-0 focus:ring-offset-0 capitalize outline-none">
+                          <SelectValue placeholder="Select a channel type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                          {Object.values(ChannelType).map((type) => (
-                            <SelectItem
-                              key={type}
-                              value={type}
-                              className="capitalize"
-                            >
-                              {type.toLowerCase()}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
+                        {Object.values(ChannelType).map((type) => (
+                          <SelectItem
+                            key={type}
+                            value={type}
+                            className="capitalize"
+                          >
+                            {type.toLowerCase()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
-                    <FormMessage/>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -54,7 +54,7 @@ export const CreateServerModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await ServersService.createServer(values.name, values.imageUrl);
+      await ServersService.create(values.name, values.imageUrl);
 
       form.reset();
       navigate(0);

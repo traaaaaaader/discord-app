@@ -3,10 +3,8 @@ import { NavigationSideBar } from "@/components/navigation/navigation-sidebar";
 import {
   RegisterPage,
   ChannelPage,
-  ConversationPage,
   InvitePage,
   LoginPage,
-  SetupPage,
   HomePage,
 } from "@/pages/index";
 import { cn } from "@/lib/utils";
@@ -14,7 +12,9 @@ import AuthLayout from "./AuthLayout";
 
 const Layout = () => {
   const location = useLocation();
-  const showSidebar = !location.pathname.includes("/auth");
+  const showSidebar =
+    !location.pathname.includes("/auth") &&
+    !location.pathname.includes("/invite");
 
   return (
     <div className="h-full">
@@ -39,11 +39,6 @@ const Layout = () => {
             path="servers/:serverId/channels/:channelId"
             element={<ChannelPage />}
           />
-          <Route
-            path="conversations/:memberId"
-            element={<ConversationPage />}
-          />
-          <Route path="setup" element={<SetupPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>

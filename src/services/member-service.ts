@@ -4,20 +4,16 @@ import { Member, MemberRole, MembersWithUser } from "@/utils/types/servers";
 
 export const MembersService = {
   getMember: async (memberId: string): Promise<Member> => {
-    const response: AxiosResponse = await apiClient.get(
-      `/members/${memberId}`
-    );
+    const response: AxiosResponse = await apiClient.get(`/members/${memberId}`);
     return response.data;
   },
 
   getMembers: async (serverId: string): Promise<MembersWithUser> => {
-    const response: AxiosResponse = await apiClient.get(
-      `/members`,{
-        params: {
-          serverId,
-        }
-      }
-    );
+    const response: AxiosResponse = await apiClient.get(`/members`, {
+      params: {
+        serverId,
+      },
+    });
     return response.data;
   },
 
@@ -32,7 +28,7 @@ export const MembersService = {
   ) => {
     const response: AxiosResponse = await apiClient.patch(
       `/members/${memberId}?serverId=${serverId}`,
-      role
+      { role }
     );
     return response.data;
   },

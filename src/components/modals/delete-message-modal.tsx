@@ -30,7 +30,7 @@ export const DeleteMessageModal = () => {
           "Message ID, Channel ID and Server ID are required to delete a message."
         );
 
-      await MessagesService.deleteMessage(
+      await MessagesService.delete(
         query.messageId,
         query.channelId,
         query.serverId

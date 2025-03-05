@@ -30,7 +30,7 @@ export const DeleteServerModal = () => {
 
       setIsLoading(true);
 
-      await ServersService.deleteServer(server?.id);
+      await ServersService.delete(server?.id);
 
       onClose();
       navigate("/");

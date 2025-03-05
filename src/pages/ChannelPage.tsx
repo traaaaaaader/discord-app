@@ -40,7 +40,7 @@ const ChannelPage = () => {
           throw new Error("Server ID is required.");
         }
         const data: ServerWithMembersWithUsersAndChannels =
-          await ServersService.getServer(serverId);
+          await ServersService.get(serverId);
         setServer(data);
       } catch (error) {
         console.error("Ошибка при загрузке сервера:", error);
@@ -52,7 +52,8 @@ const ChannelPage = () => {
   }, [navigate, serverId]);
 
   if (!server) {
-    return navigate("/");
+    navigate("/");
+    return;
   }
 
   const channel = server.channels.find((channel) => channel.id === channelId);

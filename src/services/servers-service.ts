@@ -7,7 +7,7 @@ import {
 } from "@/utils/types/servers";
 
 export const ServersService = {
-  getServer: async (
+  get: async (
     serverId: string
   ): Promise<ServerWithMembersWithUsersAndChannels> => {
     const response: AxiosResponse = await apiClient.get<Server>(
@@ -16,14 +16,14 @@ export const ServersService = {
     return response.data;
   },
 
-  getServers: async (): Promise<ServerWithMembersAndChannels[]> => {
+  getAll: async (): Promise<ServerWithMembersAndChannels[]> => {
     const response = await apiClient.get<ServerWithMembersAndChannels[]>(
       "/servers"
     );
     return response.data;
   },
 
-  createServer: async (name: string, imageUrl: string): Promise<Server> => {
+  create: async (name: string, imageUrl: string): Promise<Server> => {
     const response: AxiosResponse = await apiClient.post("/servers", {
       name,
       imageUrl,
@@ -31,7 +31,7 @@ export const ServersService = {
     return response.data;
   },
 
-  updateServer: async (
+  update: async (
     serverId: string,
     name: string,
     imageUrl: string
@@ -47,7 +47,7 @@ export const ServersService = {
     return response.data;
   },
 
-  deleteServer: async (serverId: string) => {
+  delete: async (serverId: string) => {
     await apiClient.delete(`/servers/${serverId}`);
   },
 };

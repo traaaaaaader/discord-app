@@ -65,7 +65,7 @@ export const EditServerModal = () => {
       if (!server || !server?.id)
         throw new Error("Server ID is required to edit a channel.");
 
-      await ServersService.updateServer(
+      await ServersService.update(
         server.id,
         values.name,
         values.imageUrl

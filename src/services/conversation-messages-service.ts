@@ -2,15 +2,10 @@ import { AxiosResponse } from "axios";
 import apiClient from "@/api/api-client";
 import qs from "query-string";
 
-export const MessagesService = {
-  create: async (
-    channelId: string,
-    serverId: string,
-    content: string,
-    fileUrl?: string
-  ) => {
+export const ConversationMessagesService = {
+  create: async (conversationId: string, content: string, fileUrl?: string) => {
     const response: AxiosResponse = await apiClient.post(
-      `/messages?channelId=${channelId}&serverId=${serverId}`,
+      `/conversation-messages?conversationId=${conversationId}`,
       { content, fileUrl }
     );
     return response.data;
@@ -21,9 +16,10 @@ export const MessagesService = {
     paramKey: string,
     paramValue: string
   ) => {
+    console.log(cursor, paramKey, paramValue)
     const url = qs.stringifyUrl(
       {
-        url: "/messages",
+        url: "/conversation-messages",
         query: {
           cursor,
           [paramKey]: paramValue,
@@ -37,25 +33,20 @@ export const MessagesService = {
   },
 
   update: async (
+    content: string,
     messageId: string,
-    channelId: string,
-    serverId: string,
-    content: string
+    conversationId: string
   ) => {
     const response: AxiosResponse = await apiClient.patch(
-      `/messages?messageId=${messageId}&channelId=${channelId}&serverId=${serverId}`,
+      `/conversation-messages?messageId=${messageId}&conversationId=${conversationId}`,
       { content }
     );
     return response.data;
   },
 
-  delete: async (
-    messageId: string,
-    channelId: string,
-    serverId: string
-  ) => {
+  delete: async (messageId: string, conversationId: string) => {
     await apiClient.delete(
-      `/messages?messageId=${messageId}&channelId=${channelId}&serverId=${serverId}`
+      `/conversation-messages?messageId=${messageId}&conversationId=${conversationId}`
     );
   },
 };

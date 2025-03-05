@@ -8,6 +8,7 @@ type ChatSocketProps = {
   addKey: string;
   updateKey: string;
   queryKey: string;
+  enabled?: boolean;
 };
 
 type MessageWithMemberWithUser = Message & {
@@ -20,7 +21,11 @@ export const useChatSocket = ({
   addKey,
   updateKey,
   queryKey,
+  enabled = true,
 }: ChatSocketProps) => {
+  if (!enabled) {
+    return;
+  }
   const { socket } = useSocket();
   const queryClient = useQueryClient();
 
@@ -79,9 +84,9 @@ export const useChatSocket = ({
       });
     });
 
-		return () => {
-			socket.off(addKey);
-			socket.off(updateKey);
-		}
+    return () => {
+      socket.off(addKey);
+      socket.off(updateKey);
+    };
   }, [queryClient, addKey, queryKey, socket, updateKey]);
 };

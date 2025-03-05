@@ -1,63 +1,49 @@
-import { useEffect, useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Form, FormField, FormItem } from "@/components/ui/form";
-import { ActionTooltip } from "@/components/action-tooltip";
-import { UserAvatar } from "@/components/user-avatar";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { User } from "@/utils/types/chat";
+import { Edit, FileIcon, Trash } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { MemberRole, User } from "@/utils/types/chat";
-import { Member } from "@/utils/types/servers";
-import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
+import { UserAvatar } from "@/components/user-avatar";
+import { ActionTooltip } from "@/components/action-tooltip";
+import { Form, FormField, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
-import { MessagesService } from "@/services";
+import { MessagesService } from "../../services";
 
-
-interface ChatItemProps {
+interface ConversationChatItemProps {
   id: string;
   content: string;
-  member: Member & {
-    user: User;
-  };
+  user: User;
   timestap: string;
   fileUrl: string | null | undefined;
   deleted: boolean;
-  currentMember: Member;
   isUpdated: boolean;
   socketQuery: Record<string, string>;
 }
 
 const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
 
-const roleIconMap = {
-  [MemberRole.GUEST]: null,
-  [MemberRole.MODERATOR]: (
-    <ShieldCheck className="h-4 w-4 ml2 text-indigo-500" />
-  ),
-  [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 ml2 text-rose-500" />,
-};
-
 const formSchema = z.object({
   content: z.string().min(1),
 });
 
-export const ChatItem = ({
+export const ConversationChatItem = ({
   id,
   content,
-  member,
+  user,
   timestap,
   fileUrl,
   deleted,
-  currentMember,
   isUpdated,
   socketQuery,
-}: ChatItemProps) => {
+}: ConversationChatItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { onOpen } = useModal();
+  const currentUser = JSON.parse(localStorage.user);
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
@@ -103,10 +89,8 @@ export const ChatItem = ({
 
   const extension = fileUrl && fileUrl.split(".").pop();
 
-  const isAdmin = currentMember.role === MemberRole.ADMIN;
-  const isModerator = currentMember.role === MemberRole.MODERATOR;
-  const isOwner = currentMember.id === member.id;
-  const canDeleteMesage = !deleted && (isAdmin || isModerator || isOwner);
+  const isOwner = user.id === currentUser.id;
+  const canDeleteMesage = !deleted && isOwner;
   const canEditMessage = !deleted && isOwner && !fileUrl;
   const isImage = extension && imageExtensions.includes(extension);
   const isFile = fileUrl && !isImage;
@@ -115,17 +99,14 @@ export const ChatItem = ({
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
         <div className="cursor-pointer hover:drop-shadow-md transition">
-          <UserAvatar src={member.user.imageUrl} />
+          <UserAvatar src={user.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
               <p className="font-semibold text-sm hover:underline cursor-pointer">
-                {member.user.name}
+                {user.name}
               </p>
-              <ActionTooltip label={member.role}>
-                {roleIconMap[member.role]}
-              </ActionTooltip>
             </div>
             <span className="text-sx text-zinc-500 dark:text-zinc-400">
               {timestap}

@@ -25,7 +25,7 @@ import { FileUpload } from "@/components/file-upload";
 
 import { useModal } from "@/hooks/use-modal-store";
 import { useEffect } from "react";
-import { UsersService } from "@/services";
+import { AuthService, UsersService } from "@/services";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -60,6 +60,12 @@ export const EditUserModal = () => {
   }, [user, form]);
 
   const isLoading = form.formState.isSubmitting;
+
+  const logout = async () => {
+    await AuthService.logout();
+    navigate(0);
+    handleClose();
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -131,6 +137,9 @@ export const EditUserModal = () => {
               />
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
+              <Button type="button" variant="google" onClick={logout}>
+                Logout
+              </Button>
               <Button variant="primary" disabled={isLoading}>
                 Update
               </Button>

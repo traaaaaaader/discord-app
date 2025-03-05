@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   Dialog,
@@ -19,35 +19,29 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FileUpload } from "@/components/file-upload";
-import { useNavigate } from "react-router-dom";
-import { ServersService } from "../../services";
+
+import { useModal } from "@/hooks/use-modal-store";
+import { ConversationService } from "@/services";
 
 const formSchema = z.object({
   name: z.string().min(1, {
-    message: "Server name is required.",
-  }),
-  imageUrl: z.string().min(1, {
-    message: "Server image is required.",
+    message: "User name is required.",
   }),
 });
 
-export const InitialModal = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
+export const CreateConversationModal = () => {
+  const { isOpen, onClose, type } = useModal();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setIsMounted(true);
-  });
+  const isModalOpen = isOpen && type === "createConversation";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      imageUrl: "",
     },
   });
 
@@ -55,64 +49,55 @@ export const InitialModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await ServersService.createServer(values.name, values.imageUrl);
+      const response = await ConversationService.create(values.name);
+
+      if (!response) {
+        alert("User not found");
+        form.reset();
+        navigate(0);
+        handleClose();
+      }
 
       form.reset();
       navigate(0);
-      window.location.reload();
+      handleClose();
     } catch (error) {
       console.log(error);
     }
   };
 
-  if (!isMounted) {
-    return null;
-  }
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
 
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Customize your server
+            Start conversation with user
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
-            Give yor servre personality with a name and an image. You can
-            alwayas change it later.
+            Enter user name to start conversation.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-8 px-6">
-              <div className="flex items-center justify-center text-center">
-                <FormField
-                  control={form.control}
-                  name="imageUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <FileUpload
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                      Server name
+                      User name
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
                         className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
-                        placeholder="Enter server name"
+                        placeholder="Enter user name"
                         {...field}
                       />
                     </FormControl>

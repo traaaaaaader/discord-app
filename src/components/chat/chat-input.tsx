@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { FileIcon, Plus, X } from "lucide-react";
 import { EmojiPicker } from "@/components/emoji-picker";
 import {
-  DirectMessagesService,
+  ConversationMessagesService,
   FilesService,
   MessagesService,
 } from "@/services";
@@ -78,13 +78,13 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       type === "channel"
-        ? await MessagesService.sendMessage(
+        ? await MessagesService.create(
             query.channelId,
             query.serverId,
             values.content,
             values.fileUrl
           )
-        : await DirectMessagesService.sendMessage(
+        : await ConversationMessagesService.create(
             query.conversationId,
             values.content,
             values.fileUrl
