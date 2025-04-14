@@ -1,20 +1,24 @@
 import { AxiosResponse } from "axios";
 import apiClient from "@/api/api-client";
 
+interface AuthResponse {
+  accessToken: string;
+}
+
 export const AuthService = {
   register: async (
     name: string,
     email: string,
     password: string,
     imageUrl: string
-  ) => {
+  ): Promise<AuthResponse> => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("email", email);
     formData.append("password", password);
     formData.append("imageUrl", imageUrl);
 
-    const response: AxiosResponse = await apiClient.post(
+    const response: AxiosResponse<AuthResponse> = await apiClient.post(
       "/auth/register",
       formData
     );
@@ -22,18 +26,34 @@ export const AuthService = {
     return response.data;
   },
 
-  login: async (email: string, password: string) => {
-    const response: AxiosResponse = await apiClient.post("/auth/login", {
-      email,
-      password,
-    });
+  login: async (
+    email: string, 
+    password: string
+  ): Promise<AuthResponse> => {
+    const response: AxiosResponse<AuthResponse> = await apiClient.post(
+      "/auth/login",
+      {
+        email,
+        password,
+      }
+    );
 
     return response.data;
   },
 
-  refresh: async () => {
+  refresh: async (
+    accessToken: string
+  ): Promise<AuthResponse | null> => {
     try {
-      const response: AxiosResponse = await apiClient.post("/auth/refresh");
+      const response: AxiosResponse<AuthResponse> = await apiClient.post(
+        "/auth/refresh",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       console.log("Error refresh token");
@@ -45,8 +65,8 @@ export const AuthService = {
     await apiClient.post("/auth/logout");
   },
 
-  google: async () => {
-    const response = await apiClient.get("/auth/google");
+  google: async (): Promise<AuthResponse> => {
+    const response: AxiosResponse<AuthResponse> = await apiClient.get("/auth/google");
     return response.data;
   },
 };

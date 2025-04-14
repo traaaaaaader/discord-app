@@ -54,7 +54,17 @@ export const CreateServerModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await ServersService.create(values.name, values.imageUrl);
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
+      await ServersService.create(
+        values.name, 
+        values.imageUrl,
+        accessToken
+      );
 
       form.reset();
       navigate(0);

@@ -23,17 +23,24 @@ export const DeleteMessageModal = () => {
 
   const onClick = async () => {
     try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        return;
+      }
+
       setIsLoading(true);
-      console.log("query = ", query);
-      if (!query || !query.messageId || !query.channelId || !query.serverId)
+
+      if (!query || !query.messageId || !query.channelId || !query.serverId) {
         throw new Error(
           "Message ID, Channel ID and Server ID are required to delete a message."
         );
+      }
 
       await MessagesService.delete(
         query.messageId,
         query.channelId,
-        query.serverId
+        query.serverId,
+        accessToken
       );
 
       onClose();

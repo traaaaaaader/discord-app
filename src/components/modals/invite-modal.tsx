@@ -38,11 +38,18 @@ export const InviteModal = () => {
 
   const onNew = async () => {
     try {
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        return;
+      }
+
       if (!server) {
         throw new Error("Server is required to invite.");
       }
+
       setIsLoading(true);
-      const response = await InviteService.update(server.id);
+      const response = await InviteService.update(server.id, accessToken);
 
       onOpen("invite", { server: response });
     } catch (error) {

@@ -2,12 +2,13 @@ import { defineConfig } from "vite";
 import path from "path";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss()],//, basicSsl()
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -36,3 +37,4 @@ export default defineConfig(async () => ({
     },
   },
 }));
+

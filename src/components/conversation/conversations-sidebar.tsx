@@ -7,6 +7,8 @@ import { UserAvatar } from "../user-avatar";
 import { ActionTooltip } from "../action-tooltip";
 import { Plus } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
+import { useEffect, useState } from "react";
+import { User } from "@/utils/types/servers";
 
 interface ConversationSidebarProps {
   conversations?: Conversation[];
@@ -19,10 +21,25 @@ export const ConversationSidebar = ({
 }: ConversationSidebarProps) => {
   const navigate = useNavigate();
   const { onOpen } = useModal();
-  const user = JSON.parse(localStorage.user);
+  const [user, setUser] = useState<User | undefined>(undefined);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser || storedUser === "undefined") {
+      navigate("/auth/login");
+      return;
+    }
+    try {
+      const parsedUser: User = JSON.parse(storedUser);
+      setUser(parsedUser);
+    } catch (error) {
+      console.error("Ошибка парсинга user:", error);
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   if (!user) {
-    navigate("/auth/login");
+    return;
   }
 
   return (

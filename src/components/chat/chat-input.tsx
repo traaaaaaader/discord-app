@@ -77,18 +77,26 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      type === "channel"
-        ? await MessagesService.create(
-            query.channelId,
-            query.serverId,
-            values.content,
-            values.fileUrl
-          )
-        : await ConversationMessagesService.create(
-            query.conversationId,
-            values.content,
-            values.fileUrl
-          );
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) return;
+
+      if (type === "channel") {
+        await MessagesService.create(
+          query.channelId,
+          query.serverId,
+          values.content,
+          values.fileUrl,
+          accessToken
+        );
+      } else {
+        await ConversationMessagesService.create(
+          query.conversationId,
+          values.content,
+          values.fileUrl,
+          accessToken
+        );
+      }
+
       setFileUrl("");
       setExtesion("");
       form.reset();

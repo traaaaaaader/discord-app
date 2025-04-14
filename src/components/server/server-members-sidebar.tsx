@@ -8,14 +8,15 @@ import { Member, ServerWithMembersWithUsersAndChannels, User } from "@/utils/typ
 
 interface ServerChannelsSidebarProps {
   server: ServerWithMembersWithUsersAndChannels;
+  user: User;
 }
 
 export const ServerMembersSidebar = ({
   server,
+  user,
 }: ServerChannelsSidebarProps) => {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.user);
   if (!user || !server) {
     navigate("/auth/login");
   }

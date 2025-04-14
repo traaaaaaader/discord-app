@@ -8,46 +8,101 @@ import {
 
 export const ServersService = {
   get: async (
-    serverId: string
+    serverId: string,
+    accessToken: string
   ): Promise<ServerWithMembersWithUsersAndChannels> => {
     const response: AxiosResponse = await apiClient.get<Server>(
-      `/servers/${serverId}`
+      `/servers/${serverId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
     return response.data;
   },
 
-  getAll: async (): Promise<ServerWithMembersAndChannels[]> => {
+  getAll: async (
+    accessToken: string
+  ): Promise<ServerWithMembersAndChannels[]> => {
     const response = await apiClient.get<ServerWithMembersAndChannels[]>(
-      "/servers"
+      "/servers",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
     return response.data;
   },
 
-  create: async (name: string, imageUrl: string): Promise<Server> => {
-    const response: AxiosResponse = await apiClient.post("/servers", {
-      name,
-      imageUrl,
-    });
+  create: async (
+    name: string, 
+    imageUrl: string,
+    accessToken: string
+  ): Promise<Server> => {
+    const response: AxiosResponse = await apiClient.post(
+      "/servers",
+      {
+        name,
+        imageUrl,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data;
   },
 
   update: async (
     serverId: string,
     name: string,
-    imageUrl: string
+    imageUrl: string,
+    accessToken: string
   ): Promise<Server> => {
-    console.group(serverId, name, imageUrl);
     const response: AxiosResponse = await apiClient.patch(
       `/servers/${serverId}`,
       {
         name,
         imageUrl,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
     );
     return response.data;
   },
 
-  delete: async (serverId: string) => {
-    await apiClient.delete(`/servers/${serverId}`);
+  delete: async (
+    serverId: string,
+    accessToken: string
+  ) => {
+    await apiClient.delete(
+      `/servers/${serverId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  },
+
+  leave: async (
+    serverId: string,
+    accessToken: string
+  ): Promise<void> => {
+    await apiClient.patch(
+      `/servers/${serverId}/leave`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
   },
 };

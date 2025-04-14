@@ -62,13 +62,21 @@ export const EditServerModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      if (!server || !server?.id)
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
+      if (!server || !server?.id) {
         throw new Error("Server ID is required to edit a channel.");
+      }
 
       await ServersService.update(
         server.id,
         values.name,
-        values.imageUrl
+        values.imageUrl,
+        accessToken
       );
 
       form.reset();

@@ -9,6 +9,7 @@ import {
   ChannelType,
   MemberRole,
   ServerWithMembersWithUsersAndChannels,
+  User,
 } from "@/utils/types/servers";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,7 +18,7 @@ import { ServerSearch } from "./server-search";
 
 interface ServerChannelsSidebarProps {
   server: ServerWithMembersWithUsersAndChannels;
-  userId: string;
+  user: User;
 }
 
 const iconMap = {
@@ -36,10 +37,9 @@ const roleIconMap = {
 
 export const ServerChannelsSidebar = ({
   server,
-  userId,
+  user,
 }: ServerChannelsSidebarProps) => {
   const navigate = useNavigate();
-  const user = localStorage.getItem("user");
 
   if (!user || !server) {
     navigate("/auth/login");
@@ -55,7 +55,7 @@ export const ServerChannelsSidebar = ({
     (channel) => channel.type === ChannelType.VIDEO
   );
 
-  const role = server.members.find((member) => member.userId === userId)?.role;
+  const role = server.members.find((member) => member.userId === user.id)?.role;
 
   return (
     <div className="flex flex-col h-full text-primary w-full dark:bg-[#2B2D31] bg-[#F2F3F5]">

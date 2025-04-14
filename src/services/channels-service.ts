@@ -9,7 +9,8 @@ import {
 export const ChannelsService = {
   getChannel: async (
     channelId: string,
-    serverId?: string
+    serverId: string | undefined,
+    accessToken: string
   ): Promise<Channel> => {
     const response: AxiosResponse = await apiClient.get(
       `/channels?channelId=${channelId}`,
@@ -17,15 +18,24 @@ export const ChannelsService = {
         params: {
           ...(serverId && { serverId }),
         },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
     );
     return response.data;
   },
 
-  getChannels: async (serverId: string): Promise<Channel[]> => {
+  getChannels: async (
+    serverId: string,
+    accessToken: string
+  ): Promise<Channel[]> => {
     const response: AxiosResponse = await apiClient.get("/channels", {
       params: {
         serverId,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return response.data;
@@ -34,11 +44,17 @@ export const ChannelsService = {
   createChannel: async (
     serverId: string,
     name: string,
-    type: ChannelType
+    type: ChannelType,
+    accessToken: string
   ): Promise<ServerWithMembersWithUsersAndChannels> => {
     const response: AxiosResponse = await apiClient.post(
       `/channels?serverId=${serverId}`,
-      { name, type }
+      { name, type },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
     return response.data;
   },
@@ -47,16 +63,33 @@ export const ChannelsService = {
     channelId: string,
     serverId: string,
     name: string,
-    type: ChannelType
+    type: ChannelType,
+    accessToken: string
   ): Promise<ServerWithMembersWithUsersAndChannels> => {
     const response: AxiosResponse = await apiClient.patch(
       `/channels/${channelId}?serverId=${serverId}`,
-      { name, type }
+      { name, type },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
     return response.data;
   },
 
-  deleteChannel: async (channelId: string, serverId: string) => {
-    await apiClient.delete(`/channels/${channelId}?serverId=${serverId}`);
+  deleteChannel: async (
+    channelId: string, 
+    serverId: string,
+    accessToken: string
+  ) => {
+    await apiClient.delete(
+      `/channels/${channelId}?serverId=${serverId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
   },
 };

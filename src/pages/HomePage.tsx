@@ -3,30 +3,30 @@ import { useNavigate } from "react-router-dom";
 
 import { ConversationSidebar } from "@/components/conversation/conversations-sidebar";
 
-import { ConversationService, UsersService } from "../services";
-import { ConversationChatMessages } from "../components/conversation/conversation-chat-messages";
-import { Conversation } from "../utils/types/chat";
-import { ChatInput } from "../components/chat/chat-input";
-import { ChatHeader } from "../components/chat/chat-header";
+import { ConversationService, UsersService } from "@/services";
+import { ConversationChatMessages } from "@/components/conversation/conversation-chat-messages";
+import { Conversation } from "@/utils/types/chat";
+import { ChatInput } from "@/components/chat/chat-input";
+import { ChatHeader } from "@/components/chat/chat-header";
+import { User } from "@/utils/types/servers";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.user);
+
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [conversationId, setConversationId] = useState("");
 
-  if (!user) {
-    navigate("/auth/login");
-  }
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        if (!user) {
-          const response = await UsersService.get();
-          localStorage.setItem("user", JSON.stringify(response.data));
-        }
-        const response = await ConversationService.get();
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) return;
+
+        const user = await UsersService.get(accessToken);
+        setUser(user);
+        const response = await ConversationService.get(accessToken);
         setConversations(response);
       } catch (error) {
         console.error("Ошибка при загрузке пользователя:", error);
@@ -35,7 +35,11 @@ const HomePage = () => {
     };
 
     fetch();
-  }, []);
+  }, [navigate]);
+
+  if (!user) {
+    return;
+  }
 
   const updateConversationId = (id: string) => {
     setConversationId(id);

@@ -72,11 +72,22 @@ export const CreateChannelModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
       if (!server) {
         throw new Error("Server ID is required to create a channel.");
       }
 
-      await ChannelsService.createChannel(server.id, values.name, values.type);
+      await ChannelsService.createChannel(
+        server.id, 
+        values.name, 
+        values.type,
+        accessToken
+      );
 
       form.reset();
       navigate(0);

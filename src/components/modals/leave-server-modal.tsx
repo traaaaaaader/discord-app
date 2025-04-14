@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,9 +10,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
+import { ServersService } from "@/services";
 import { useModal } from "@/hooks/use-modal-store";
-
 
 export const LeaveServerModal = () => {
   const {isOpen, onClose, type, data } = useModal();
@@ -25,17 +23,23 @@ export const LeaveServerModal = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
-    try{
+    try {
       setIsLoading(true);
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken || !server?.id) {
+        navigate("/auth/login");
+        return;
+      }
 
-      await axios.patch(`/api/servers/${server?.id}/leave`);
+      await ServersService.leave(server.id, accessToken);
 
       onClose();
       navigate(0);
       navigate("/auth/login");
     } catch(error) {
       console.log(error);
-    } finally{
+    } finally {
       setIsLoading(false);
     }
   }

@@ -4,43 +4,57 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   ChannelType,
   ServerWithMembersWithUsersAndChannels,
+  User,
 } from "@/utils/types/servers";
-import { ServersService } from "@/services";
+import { ServersService, UsersService } from "@/services";
 
 import { ChatHeader } from "@/components/chat/chat-header";
-// import { ChatInput } from "@/components/chat/chat-input";
-// import { ChatMessages } from "@/components/chat/chat-messages";
 
 import { ServerChannelsSidebar } from "@/components/server/server-channels-sidebar";
 import { ServerMembersSidebar } from "@/components/server/server-members-sidebar";
 
 import Spinner from "@/components/ui/Spinner";
-import { ChatMessages } from "../components/chat/chat-messages";
-import { ChatInput } from "../components/chat/chat-input";
+import { ChatMessages } from "@/components/chat/chat-messages";
+import { ChatInput } from "@/components/chat/chat-input";
+import { MediaRoom } from "@/components/chat/media-room";
+import { cn } from "@/lib/utils";
 
 const ChannelPage = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.user);
-
-  if (!user) {
-    navigate("/auth/login");
-  }
 
   const serverId = params.serverId;
   const channelId = params.channelId;
 
   const [server, setServer] =
     useState<ServerWithMembersWithUsersAndChannels | null>(null);
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) return;
+
+      const user = await UsersService.get(accessToken);
+      if (!user) {
+        navigate("/auth/login");
+        return;
+      }
+      setUser(user);
+    };
+
+    fetchUser();
+
     const fetchServers = async () => {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) return;
+
         if (!serverId) {
           throw new Error("Server ID is required.");
         }
         const data: ServerWithMembersWithUsersAndChannels =
-          await ServersService.get(serverId);
+          await ServersService.get(serverId, accessToken);
         setServer(data);
       } catch (error) {
         console.error("Ошибка при загрузке сервера:", error);
@@ -52,8 +66,10 @@ const ChannelPage = () => {
   }, [navigate, serverId]);
 
   if (!server) {
-    navigate("/");
-    return;
+    return <Spinner />;
+  }
+  if (!user) {
+    return <Spinner />;
   }
 
   const channel = server.channels.find((channel) => channel.id === channelId);
@@ -66,12 +82,18 @@ const ChannelPage = () => {
   return (
     <div className="h-full">
       <div className="hidden md:flex h-full w-60 z-20 flex-col fixed inset-y-0">
-        <ServerChannelsSidebar userId={user.id} server={server} />
+        <ServerChannelsSidebar user={user} server={server} />
       </div>
-      <div className="hidden md:flex h-full w-60 z-20 flex-col fixed inset-y-0 right-0">
-        <ServerMembersSidebar server={server} />
-      </div>
-      <main className="h-full md:px-60">
+      {channel.type !== ChannelType.AUDIO && (
+        <div className="hidden md:flex h-full w-60 z-20 flex-col fixed inset-y-0 right-0">
+          <ServerMembersSidebar user={user} server={server} />
+        </div>
+      )}
+      <main className={cn(
+        "h-full",
+        "md:pl-60",
+        channel.type !== ChannelType.AUDIO ? "md:pr-60" : "md:pr-0"
+      )}>
         <div className="bg-white dark:bg-[#313338] flex flex-col h-screen">
           <ChatHeader
             name={channel.name}
@@ -103,12 +125,12 @@ const ChannelPage = () => {
               />
             </>
           )}
-          {/* {channel.type === ChannelType.AUDIO && (
-        <MediaRoom chatId={channel.id} video={false} audio={true} />
-      )}
-      {channel.type === ChannelType.VIDEO && (
-        <MediaRoom chatId={channel.id} video={true} audio={true} />
-      )} */}
+          {channel.type === ChannelType.AUDIO && (
+            <MediaRoom
+              channelId={channel.id}
+              username={user.name}
+            />
+          )}
         </div>
       </main>
     </div>

@@ -49,7 +49,16 @@ export const CreateConversationModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await ConversationService.create(values.name);
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
+      const response = await ConversationService.create(
+        values.name,
+        accessToken
+      );
 
       if (!response) {
         alert("User not found");

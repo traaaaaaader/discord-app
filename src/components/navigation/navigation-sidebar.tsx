@@ -16,23 +16,43 @@ import { UserAvatar } from "@/components/user-avatar";
 import { useModal } from "@/hooks/use-modal-store";
 import { ActionTooltip } from "../action-tooltip";
 import { IconBrandDiscordFilled } from "@tabler/icons-react";
+import { UsersService } from "@/services";
 
 export const NavigationSideBar = () => {
   const { onOpen } = useModal();
   const navigate = useNavigate();
 
   const [servers, setServers] = useState<Server[]>([]);
-
-  const user: User = JSON.parse(localStorage.user);
-  if (!user) {
-    navigate("/auth/login");
-  }
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
+      const user = await UsersService.get(accessToken);
+      if (!user) {
+        navigate("/auth/login");
+        return;
+      }
+      setUser(user);
+    };
+
+    fetchUser();
+
     const abortController = new AbortController();
     const fetchServers = async () => {
       try {
-        const data = await ServersService.getAll();
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+          navigate("/auth/login");
+          return;
+        }
+
+        const data = await ServersService.getAll(accessToken);
         setServers(data);
       } catch (error) {
         console.error("Ошибка при загрузке серверов:", error);
@@ -47,7 +67,7 @@ export const NavigationSideBar = () => {
     };
   }, [navigate]);
 
-  if (!servers) {
+  if (!servers || !user) {
     return <Spinner />;
   }
 
@@ -56,16 +76,14 @@ export const NavigationSideBar = () => {
       <ActionTooltip side="right" align="center" label="Личные сообщения">
         <button
           onClick={() => navigate("/")}
-          className="group flex items-center"
+          className="group flex items-center cursor-pointer"
         >
           <div
             className="flex mx-3 h-[48px] w-[48px] rounded-[24px]
             group-hover:rounded-[16px] transition-all overflow-hidden
             items-center justify-center bg-background dark:bg-neutral-700 group-hover:bg-emerald-500"
           >
-            <IconBrandDiscordFilled
-              className="group-hover:text-white transition text-emerald-500"
-            />
+            <IconBrandDiscordFilled className="group-hover:text-white transition text-emerald-500" />
           </div>
         </button>
       </ActionTooltip>
@@ -87,7 +105,7 @@ export const NavigationSideBar = () => {
         ))}
       </ScrollArea>
       <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
-      <NavigationActionComponent />
+      <NavigationActionComponent/>
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
         <ModeToggle />
         <UserAvatar

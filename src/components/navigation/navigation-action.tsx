@@ -10,7 +10,7 @@ export const NavigationActionComponent = () => {
       <ActionTooltip side="right" align="center" label="Add a server">
         <button
           onClick={() => onOpen("createServer")}
-          className="group flex items-center"
+          className="group flex items-center cursor-pointer"
         >
           <div
             className="flex mx-3 h-[48px] w-[48px] rounded-[24px]

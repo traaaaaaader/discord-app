@@ -28,10 +28,15 @@ export const useChatQuery = ({
   const { isConnected } = useSocket();
 
   const fetchMessages = async ({ pageParam = undefined }) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      throw new Error('No access token found');
+    }
+
     const messages =
       paramKey === "channelId"
-        ? await MessagesService.get(pageParam, paramKey, paramValue)
-        : ConversationMessagesService.get(pageParam, paramKey, paramValue);
+        ? await MessagesService.get(pageParam, paramKey, paramValue, token)
+        : ConversationMessagesService.get(pageParam, paramKey, paramValue, token);
     return messages;
   };
 

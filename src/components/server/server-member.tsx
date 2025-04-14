@@ -24,7 +24,7 @@ export const ServerMember = ({ member } : ServerMemberProps) => {
   const icon = roleIconMap[member.role];
 
   const onClick = () => {
-    navigate(`/servers/${params?.serverId}/conversations/${member.id}`);
+    navigate(`/`);
   };
 
   return (

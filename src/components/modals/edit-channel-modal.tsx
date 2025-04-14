@@ -71,6 +71,12 @@ export const EditChannelModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
       if (!channel || !channel?.id || !server || !server?.id) {
         throw new Error(
           "Server ID and Channel ID are required to edit a channel."
@@ -81,7 +87,8 @@ export const EditChannelModal = () => {
         channel?.id,
         server?.id,
         values.name,
-        values.type
+        values.type,
+        accessToken
       );
 
       form.reset();

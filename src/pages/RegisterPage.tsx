@@ -58,15 +58,17 @@ const RegisterPage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await AuthService.register(
+      const { accessToken } = await AuthService.register(
         values.name,
         values.email,
         values.password,
         values.imageUrl
       );
 
+      localStorage.setItem("accessToken", accessToken);
+      
       form.reset();
-      navigate("/auth/login");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }

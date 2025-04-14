@@ -63,21 +63,28 @@ export const EditUserModal = () => {
 
   const logout = async () => {
     await AuthService.logout();
-    navigate(0);
+    localStorage.removeItem('accessToken');
+    navigate("/auth/login");
     handleClose();
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const user = await UsersService.edit(values.name, values.imageUrl);
-
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
       }
 
+      await UsersService.edit(
+        values.name, 
+        values.imageUrl,
+        accessToken
+      );
+
       form.reset();
-      navigate(0);
       handleClose();
+      navigate(0);
     } catch (error) {
       console.log(error);
     }

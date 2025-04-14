@@ -4,7 +4,32 @@
   "description": "Capability for the main window",
   "windows": ["main"],
   "permissions": [
+    "core:path:default",
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    "core:window:allow-set-title",
     "core:default",
-    "opener:default"
+    "opener:default",
+    "store:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://**" },
+        { "url": "http://**" },
+        { "url": "http://localhost:3000/**" },
+        { "url": "https://localhost:3000/**" },
+        { "url": "http://localhost:3001/**" },
+        { "url": "https://localhost:3001/**" },
+        { "url": "http://192.168.0.121:48080/**" }
+      ]
+    },
+    "http:allow-fetch",
+    "http:allow-fetch-cancel",
+    "http:allow-fetch-read-body",
+    "http:allow-fetch-send"
   ]
 }

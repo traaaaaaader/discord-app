@@ -11,10 +11,10 @@ function App() {
     <BrowserRouter>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <SocketProvider>
-          <ModalProvider />
-          <QueryProvider>
-            <Layout />
-          </QueryProvider>
+            <ModalProvider />
+            <QueryProvider>
+              <Layout />
+            </QueryProvider>
         </SocketProvider>
       </ThemeProvider>
     </BrowserRouter>

@@ -25,12 +25,19 @@ export const DeleteServerModal = () => {
 
   const onClick = async () => {
     try {
-      if (!server || !server?.id)
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
+      if (!server || !server?.id) {
         throw new Error("Server ID is required to delete a server.");
+      }
 
       setIsLoading(true);
 
-      await ServersService.delete(server?.id);
+      await ServersService.delete(server?.id, accessToken);
 
       onClose();
       navigate("/");

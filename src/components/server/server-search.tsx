@@ -46,7 +46,7 @@ export const ServerSearch = ({
 		setOpen(false);
 
 		if (type === "member") {
-			return navigate(`/servers/${params?.serverId}/conversations/${id}`);
+			return navigate(`/`);
 		}
 
 		if (type === "channel") {

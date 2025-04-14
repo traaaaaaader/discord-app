@@ -54,12 +54,22 @@ export const MembersModal = () => {
   const onKick = async (memberId: string) => {
     try {
       setLoadingId(memberId);
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
 
       if (!server || !server?.id) {
         throw new Error("Server ID is required to edit a channel.");
       }
-      console.log(memberId, server.id);
-      const response = await MembersService.deleteMember(memberId, server.id);
+
+      const response = await MembersService.deleteMember(
+        memberId, 
+        server.id,
+        accessToken
+      );
 
       navigate(0);
       onOpen("members", { server: response.data });
@@ -73,14 +83,22 @@ export const MembersModal = () => {
   const onRoleChange = async (memberId: string, role: MemberRole) => {
     try {
       setLoadingId(memberId);
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
 
       if (!server || !server?.id) {
         throw new Error("Server ID is required to edit a channel.");
       }
+
       const response = await MembersService.updateMember(
         server.id,
         memberId,
-        role
+        role,
+        accessToken
       );
 
       navigate(0);

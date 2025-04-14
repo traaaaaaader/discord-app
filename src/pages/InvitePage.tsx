@@ -7,35 +7,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { InviteService } from "../services";
+import { InviteService, UsersService } from "../services";
 import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
 
 const InvitePage = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-	const user = JSON.parse(localStorage.user);
-	if (!user) {
-    navigate("/auth/login");
-  }
+  useEffect(() => {
+    const fetchUser = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) return;
+
+      const user = await UsersService.get(accessToken);
+      if (!user) {
+        navigate("/auth/login");
+      }
+    };
+
+    fetchUser();
+  }, [navigate]);
 
   const { inviteCode } = params;
 
-
   const accept = async () => {
     try {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) return;
+
       if (!inviteCode) {
         throw new Error("Invite code is requared.");
       }
-      const server = await InviteService.invite(inviteCode);
-			console.log(server)
+      const server = await InviteService.invite(inviteCode, accessToken);
+      console.log(server);
       const generalChannelId = server.channels.find(
         (channel) => channel.name === "general"
       )?.id;
-			console.log(generalChannelId)
+      console.log(generalChannelId);
       navigate(`/servers/${server.id}/channels/${generalChannelId}`);
     } catch (e) {
-			navigate("/");
+      navigate("/");
       console.log("Error on invite page, ", e);
     }
   };

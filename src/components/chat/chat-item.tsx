@@ -82,12 +82,17 @@ export const ChatItem = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) return;
+
       await MessagesService.update(
         id,
         socketQuery.channelId,
         socketQuery.serverId,
-        values.content
+        values.content,
+        accessToken
       );
+
       form.reset();
       setIsEditing(false);
     } catch (error) {

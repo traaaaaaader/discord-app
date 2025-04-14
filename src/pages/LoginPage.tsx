@@ -40,9 +40,11 @@ const LoginPage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user = await UsersService.get();
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) return;
+        
+        const user = await UsersService.get(accessToken);
         if (user) {
-          localStorage.setItem("user", JSON.stringify(user));
           navigate("/");
         }
       } catch (error) {
@@ -65,9 +67,9 @@ const LoginPage = () => {
 
   const onSubmitEmail = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await AuthService.login(values.email, values.password);
-
-      localStorage.setItem("user", JSON.stringify(response.user));
+      const { accessToken } = await AuthService.login(values.email, values.password);
+      
+      localStorage.setItem("accessToken", accessToken);
 
       form.reset();
       navigate("/");

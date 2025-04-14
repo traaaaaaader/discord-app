@@ -7,11 +7,17 @@ export const MessagesService = {
     channelId: string,
     serverId: string,
     content: string,
-    fileUrl?: string
+    fileUrl: string | undefined,
+    accessToken: string
   ) => {
     const response: AxiosResponse = await apiClient.post(
       `/messages?channelId=${channelId}&serverId=${serverId}`,
-      { content, fileUrl }
+      { content, fileUrl },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
     return response.data;
   },
@@ -19,7 +25,8 @@ export const MessagesService = {
   get: async (
     cursor: string | undefined,
     paramKey: string,
-    paramValue: string
+    paramValue: string,
+    accessToken: string
   ) => {
     const url = qs.stringifyUrl(
       {
@@ -32,7 +39,11 @@ export const MessagesService = {
       { skipNull: true }
     );
 
-    const response: AxiosResponse = await apiClient.get(url);
+    const response: AxiosResponse = await apiClient.get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response.data;
   },
 
@@ -40,11 +51,17 @@ export const MessagesService = {
     messageId: string,
     channelId: string,
     serverId: string,
-    content: string
+    content: string,
+    accessToken: string
   ) => {
     const response: AxiosResponse = await apiClient.patch(
       `/messages?messageId=${messageId}&channelId=${channelId}&serverId=${serverId}`,
-      { content }
+      { content },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
     return response.data;
   },
@@ -52,10 +69,16 @@ export const MessagesService = {
   delete: async (
     messageId: string,
     channelId: string,
-    serverId: string
+    serverId: string,
+    accessToken: string
   ) => {
     await apiClient.delete(
-      `/messages?messageId=${messageId}&channelId=${channelId}&serverId=${serverId}`
+      `/messages?messageId=${messageId}&channelId=${channelId}&serverId=${serverId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
   },
 };

@@ -25,13 +25,24 @@ export const DeleteChannelModal = () => {
 
   const onClick = async () => {
     try {
-      if (!channel || !channel.id || !server || !server.id)
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        navigate("/auth/login");
+        return;
+      }
+
+      if (!channel || !channel.id || !server || !server.id) {
         throw new Error(
           "Server ID and Channel ID are required to delete a channel."
         );
+      }
 
       setIsLoading(true);
-      await ChannelsService.deleteChannel(channel.id, server.id);
+      await ChannelsService.deleteChannel(
+        channel.id, 
+        server.id,
+        accessToken
+      );
 
       onClose();
       navigate(0);

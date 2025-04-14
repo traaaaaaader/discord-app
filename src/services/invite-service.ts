@@ -7,19 +7,34 @@ import {
 
 export const InviteService = {
   invite: async (
-    inviteCode: string
+    inviteCode: string,
+    accessToken: string
   ): Promise<ServerWithMembersWithUsersAndChannels> => {
     const response: AxiosResponse =
       await apiClient.patch<ServerWithMembersWithUsersAndChannels>(
-        `/invite/${inviteCode}`
+        `/invite/${inviteCode}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
       );
     return response.data;
   },
 
-  update: async (serverId: string): Promise<ServerWithMembersAndChannels> => {
+  update: async (
+    serverId: string,
+    accessToken: string
+  ): Promise<ServerWithMembersAndChannels> => {
     const response = await apiClient.patch<ServerWithMembersAndChannels>(
       "/invite/invite-code",
-      { serverId }
+      { serverId },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
     return response.data;
   },
