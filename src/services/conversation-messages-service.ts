@@ -27,7 +27,6 @@ export const ConversationMessagesService = {
     paramValue: string,
     accessToken: string
   ) => {
-    console.log(cursor, paramKey, paramValue)
     const url = qs.stringifyUrl(
       {
         url: "/conversation-messages",

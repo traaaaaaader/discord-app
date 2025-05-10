@@ -1,14 +1,18 @@
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { UserAvatar } from "@/components/user-avatar";
+import { ActionTooltip } from "@/components/action-tooltip";
+import Spinner from "@/components/ui/Spinner";
 
-import { Conversation } from "@/utils/types/chat";
-import { UserAvatar } from "../user-avatar";
-import { ActionTooltip } from "../action-tooltip";
-import { Plus } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
-import { useEffect, useState } from "react";
+import { Conversation } from "@/utils/types/chat";
 import { User } from "@/utils/types/servers";
+
+import { UsersService } from "@/services";
 
 interface ConversationSidebarProps {
   conversations?: Conversation[];
@@ -21,25 +25,22 @@ export const ConversationSidebar = ({
 }: ConversationSidebarProps) => {
   const navigate = useNavigate();
   const { onOpen } = useModal();
-  const [user, setUser] = useState<User | undefined>(undefined);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser || storedUser === "undefined") {
-      navigate("/auth/login");
-      return;
-    }
-    try {
-      const parsedUser: User = JSON.parse(storedUser);
-      setUser(parsedUser);
-    } catch (error) {
-      console.error("Ошибка парсинга user:", error);
-      navigate("/auth/login");
-    }
+  const [user, setUser] = useState<User | null>(null);
+  const fetchUser = useCallback(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return navigate("/auth/login");
+    const user = await UsersService.get(token);
+    if (!user) return navigate("/auth/login");
+    setUser(user);
   }, [navigate]);
 
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
   if (!user) {
-    return;
+    return <Spinner />;
   }
 
   return (
@@ -60,6 +61,7 @@ export const ConversationSidebar = ({
         <div className="mt-2">
           {conversations?.map((conversation) => (
             <div
+              key={conversation.id}
               className="p-2 flex items-center text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 rounded-md cursor-pointer hover:dark:bg-[#3e41468d]"
               onClick={() => updateConversationId(conversation.id)}
             >

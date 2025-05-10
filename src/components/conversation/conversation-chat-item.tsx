@@ -67,12 +67,15 @@ export const ConversationChatItem = ({
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) return;
     try {
       await MessagesService.update(
         id,
         socketQuery.channelId,
         socketQuery.serverId,
-        values.content
+        values.content,
+        accessToken
       );
       form.reset();
       setIsEditing(false);

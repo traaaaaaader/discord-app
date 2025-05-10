@@ -1,97 +1,92 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { ConversationSidebar } from "@/components/conversation/conversations-sidebar";
-
 import { ConversationService, UsersService } from "@/services";
-import { ConversationChatMessages } from "@/components/conversation/conversation-chat-messages";
-import { Conversation } from "@/utils/types/chat";
-import { ChatInput } from "@/components/chat/chat-input";
+import { Conversation, User } from "@/utils/types/chat";
 import { ChatHeader } from "@/components/chat/chat-header";
-import { User } from "@/utils/types/servers";
+import { ConversationSidebar } from "@/components/conversation/conversations-sidebar";
+import { ConversationChatMessages } from "@/components/conversation/conversation-chat-messages";
+import { ChatInput } from "@/components/chat/chat-input";
+import Spinner from "@/components/ui/Spinner";
 
 const HomePage = () => {
   const navigate = useNavigate();
 
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const fetchUser = useCallback(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return navigate("/auth/login");
+    const user = await UsersService.get(token);
+    if (!user) return navigate("/auth/login");
+    setUser(user);
+    setAuthLoading(false);
+  }, [navigate]);
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [convLoading, setConvLoading] = useState(true);
+  const fetchConvs = useCallback(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+    const conversation = await ConversationService.get(token);
+    setConversations(conversation);
+    setConvLoading(false);
+  }, []);
+  useEffect(() => {
+    fetchConvs();
+  }, [fetchConvs]);
+
   const [conversationId, setConversationId] = useState("");
 
-  const [user, setUser] = useState<User>();
+  const conversation = useMemo<Conversation | undefined>(() => {
+    if (!conversations.length) return undefined;
+    return (
+      conversations.find((c) => c.id === conversationId) || conversations[0]
+    );
+  }, [conversations, conversationId]);
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        if (!accessToken) return;
+  const partner = useMemo(() => {
+    if (!conversation || !user) return undefined;
+    return conversation.userOneId === user.id
+      ? conversation.userTwo
+      : conversation.userOne;
+  }, [conversation, user]);
 
-        const user = await UsersService.get(accessToken);
-        setUser(user);
-        const response = await ConversationService.get(accessToken);
-        setConversations(response);
-      } catch (error) {
-        console.error("Ошибка при загрузке пользователя:", error);
-        navigate("/auth/login");
-      }
-    };
-
-    fetch();
-  }, [navigate]);
-
-  if (!user) {
-    return;
-  }
-
-  const updateConversationId = (id: string) => {
-    setConversationId(id);
-  };
-
-  const conversation = conversations.find(
-    (conv) => conv.userOneId === user.id || conv.userTwoId === user.id
-  );
-  const partner =
-    conversation?.userOneId === user.id
-      ? conversation?.userTwo
-      : conversation?.userOne;
-
-  const name = partner?.name ?? "";
+  if (authLoading || convLoading) return <Spinner />;
+  if (!user) return <Spinner />;
 
   return (
     <div className="h-full">
-      <div className="hidden md:flex h-full w-70 z-20 flex-col fixed inset-y-0">
+      <div className="hidden md:flex h-full w-70 fixed inset-y-0">
         <ConversationSidebar
           conversations={conversations}
-          updateConversationId={updateConversationId}
+          updateConversationId={setConversationId}
         />
       </div>
-      {/* <div className="hidden md:flex h-full w-60 z-20 flex-col fixed inset-y-0 right-0">
-          <ConversatoinParticipantsSidebar participants={conversation.participants} />
-        </div> */}
       <main className="h-full md:pl-70">
-        <div className="bg-white dark:bg-[#313338] flex flex-col h-screen">
-          {conversationId && (
+        <div className="flex flex-col h-screen bg-white dark:bg-[#313338]">
+          {partner && conversation && (
             <>
               <ChatHeader
-                name={name}
+                name={partner.name}
                 type="conversation"
-                imageUrl={partner?.imageUrl}
+                imageUrl={partner.imageUrl}
               />
               <ConversationChatMessages
-                chatId={conversationId}
-                name={name}
+                chatId={conversation.id}
+                name={partner.name}
                 paramKey="conversationId"
-                paramValue={conversationId}
-                socketQuery={{
-                  conversationId,
-                }}
+                paramValue={conversation.id}
+                socketQuery={{ conversationId }}
                 type="conversation"
               />
               <ChatInput
-                name={name}
+                name={partner.name}
                 type="conversation"
                 apiUrl="messages"
-                query={{
-                  conversationId,
-                }}
+                query={{ conversationId }}
               />
             </>
           )}

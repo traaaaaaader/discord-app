@@ -22,7 +22,7 @@ import {
 import { FileUpload } from "@/components/file-upload";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import { Chrome } from "lucide-react";
 
 import { AuthService } from "../services/auth-service";
 
@@ -181,7 +181,7 @@ const RegisterPage = () => {
                   window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL ?? "";
                 }}
               >
-                <IconBrandGoogleFilled className="mr-2" />
+                <Chrome className="mr-2" />
                 Зарегистрироваться
               </Button>
             </CardFooter>

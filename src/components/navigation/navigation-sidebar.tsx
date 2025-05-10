@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
@@ -15,8 +15,9 @@ import { UserAvatar } from "@/components/user-avatar";
 
 import { useModal } from "@/hooks/use-modal-store";
 import { ActionTooltip } from "../action-tooltip";
-import { IconBrandDiscordFilled } from "@tabler/icons-react";
+// import { IconBrandDiscordFilled } from "@tabler/icons-react";
 import { UsersService } from "@/services";
+import { Tornado } from "lucide-react";
 
 export const NavigationSideBar = () => {
   const { onOpen } = useModal();
@@ -25,9 +26,9 @@ export const NavigationSideBar = () => {
   const [servers, setServers] = useState<Server[]>([]);
   const [user, setUser] = useState<User>();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const accessToken = localStorage.getItem('accessToken');
+  const fetchData = useCallback(async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         navigate("/auth/login");
         return;
@@ -39,33 +40,28 @@ export const NavigationSideBar = () => {
         return;
       }
       setUser(user);
-    };
 
-    fetchUser();
-
-    const abortController = new AbortController();
-    const fetchServers = async () => {
-      try {
-        const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
-          navigate("/auth/login");
-          return;
-        }
-
-        const data = await ServersService.getAll(accessToken);
-        setServers(data);
-      } catch (error) {
-        console.error("Ошибка при загрузке серверов:", error);
-        navigate("/auth/login");
-      }
-    };
-
-    fetchServers();
-
-    return () => {
-      abortController.abort();
-    };
+      const servers = await ServersService.getAll(accessToken);
+      setServers(servers);
+    } catch (error) {
+      console.error("Ошибка при загрузке данных: ", error);
+      navigate("/auth/login");
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const textChannels = useMemo(
+    () =>
+      servers.map((s) => ({
+        id: s.id,
+        firstTextChannelId: s.channels.find((c) => c.type === ChannelType.TEXT)
+          ?.id,
+      })),
+    [servers]
+  );
 
   if (!servers || !user) {
     return <Spinner />;
@@ -83,7 +79,7 @@ export const NavigationSideBar = () => {
             group-hover:rounded-[16px] transition-all overflow-hidden
             items-center justify-center bg-background dark:bg-neutral-700 group-hover:bg-emerald-500"
           >
-            <IconBrandDiscordFilled className="group-hover:text-white transition text-emerald-500" />
+            <Tornado className="group-hover:text-white transition text-emerald-500" />
           </div>
         </button>
       </ActionTooltip>
@@ -94,9 +90,8 @@ export const NavigationSideBar = () => {
             <NavigationItem
               serverId={server.id}
               channelId={
-                server.channels.filter(
-                  (channel) => channel.type === ChannelType.TEXT
-                )[0].id
+                textChannels.find((tc) => tc.id === server.id)
+                  ?.firstTextChannelId!
               }
               imageUrl={server.imageUrl}
               name={server.name}
@@ -105,7 +100,7 @@ export const NavigationSideBar = () => {
         ))}
       </ScrollArea>
       <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
-      <NavigationActionComponent/>
+      <NavigationActionComponent />
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
         <ModeToggle />
         <UserAvatar

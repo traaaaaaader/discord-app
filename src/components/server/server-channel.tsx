@@ -5,13 +5,14 @@ import {
   ServerWithMembersWithUsersAndChannels,
 } from "@/utils/types/servers";
 import { Edit, Hash, Lock, Mic, Trash, Video } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { ActionTooltip } from "@/components/action-tooltip";
 import { ModalType, useModal } from "@/hooks/use-modal-store";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSocket } from "../providers/socket-provider";
-import { useEffect, useState } from "react";
+import { useMedia } from "../providers/media-provider";
+import { UserAvatar } from "../user-avatar";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import { useEffect } from "react";
 
 interface ServerChannelProps {
   channel: Channel;
@@ -32,43 +33,13 @@ export const ServerChannel = ({
 }: ServerChannelProps) => {
   const params = useParams();
   const navigate = useNavigate();
-
-  const { socket, isConnected } = useSocket();
-
-  const [participants, setParticipants] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!socket || !isConnected) return;
-
-    const handleUserJoined = (data: { username: string }) => {
-      setParticipants((prev) => [...prev, data.username]);
-    };
-
-    const handleUserLeft = (data: { username: string }) => {
-      setParticipants((prev) => prev.filter((name) => name !== data.username));
-    };
-
-    socket.on("userJoined", handleUserJoined);
-    socket.on("userLeft", handleUserLeft);
-
-    // Запрос текущих участников
-    socket.emit("getParticipants", { roomId: channel.id }, (response: any) => {
-      if (response.status === "ok") {
-        setParticipants(response.participants);
-      }
-    });
-
-    return () => {
-      socket.off("userJoined", handleUserJoined);
-      socket.off("userLeft", handleUserLeft);
-    };
-  }, [socket, isConnected, channel]);
+  const { participants, fetchParticipants } = useMedia();
 
   const { onOpen } = useModal();
-
   const Icon = iconMap[channel.type];
 
   const onClick = () => {
+    fetchParticipants(channel.id);
     navigate(`/servers/${server.id}/channels/${channel.id}`);
   };
 
@@ -116,7 +87,21 @@ export const ServerChannel = ({
           <Lock className="ml-auto w-4 h-4 text-zinc-500 dark:text-zinc-400" />
         )}
       </button>
-			<div>{participants}</div>
+      <div className="px-2 text-xs text-zinc-400 flex flex-col">
+        {channel.type === ChannelType.AUDIO &&
+          (participants ?? [])
+            .filter((p) => p.channelId === channel.id)
+            .map((p) => (
+              <div key={p.username} className="flex items-center pl-4 py-1">
+                <Avatar className="w-6 h-6 rounded-full object-cover">
+                  <AvatarImage src={p.avatar} />
+                </Avatar>
+                <span className="pl-1.5 font-medium text-zinc-700 dark:text-zinc-300">
+                  {p.username}
+                </span>
+              </div>
+            ))}
+      </div>
     </>
   );
 };

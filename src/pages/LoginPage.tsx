@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AuthService, UsersService } from "@/services";
 import { NavLink, useNavigate } from "react-router-dom";
-import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import { Chrome } from "lucide-react"
 import { useEffect } from "react";
 
 const formSchema = z.object({
@@ -155,7 +155,7 @@ const LoginPage = () => {
                     import.meta.env.VITE_GOOGLE_AUTH_URL ?? "";
                 }}
               >
-                <IconBrandGoogleFilled className="mr-2" />
+                <Chrome className="mr-2" />
                 Войти
               </Button>
             </CardFooter>
