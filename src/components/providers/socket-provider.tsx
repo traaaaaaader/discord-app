@@ -25,6 +25,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       path: "/socket/io",
     });
 
+    console.log(socketInstance)
+
     
     socketInstance.on("connect", () => {
       setIsConected(true);

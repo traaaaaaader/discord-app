@@ -17,7 +17,6 @@ export interface User {
   email: string;
   servers: Server[];
   members: Member[];
-  channels: Channel[];
   createdAt: string;
   updatedAt: string;
 }
@@ -51,7 +50,6 @@ export interface Channel {
   name: string;
   type: ChannelType;
   userId: string;
-  user: User;
   serverId: string;
   server: Server;
   createdAt: string;

@@ -39,6 +39,8 @@ type MediaContextType = {
   setMuted: (producerId: string, muted: boolean) => void;
   participants: Participant[];
   fetchParticipants: (channelId: string) => void;
+  toggleMute: () => void;
+  isMicPaused: boolean;
 };
 
 const MediaContext = createContext<MediaContextType | undefined>(undefined);
@@ -56,6 +58,7 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
     Record<string, { volume: number; muted: boolean }>
   >({});
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [isMicPaused, setMicPaused] = useState(false);
 
   const roomRef = useRef<string | null>(null);
   const localusernameRef = useRef<string>("");
@@ -64,6 +67,8 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
   const sendTransportRef = useRef<mediasoupTypes.Transport>();
   const recvTransportRef = useRef<mediasoupTypes.Transport>();
   const audioProducerRef = useRef<mediasoupTypes.Producer>();
+  const screenProducerRef = useRef<mediasoupTypes.Producer>();
+  const audioEls = useRef<Record<string, HTMLAudioElement>>({});
   const consumedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -96,12 +101,44 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
       );
     };
 
+    const onProducerClosed = ({ producerId }: { producerId: string }) => {
+      setRemoteTracks((t) => t.filter((r) => r.producerId !== producerId));
+      const el = audioEls.current[producerId];
+      if (el) {
+        const stream = el.srcObject;
+        if (stream instanceof MediaStream) {
+          stream.getTracks().forEach((t) => t.stop());
+        }
+        delete audioEls.current[producerId];
+        setRemoteTracks((tracks) =>
+          tracks.filter((r) => r.producerId !== producerId)
+        );
+      }
+    };
+
+    const onProducerPaused = ({ producerId }: { producerId: string }) => {
+      if (audioProducerRef.current?.id === producerId) {
+        setMicPaused(true);
+      }
+    };
+    const onProducerResumed = ({ producerId }: { producerId: string }) => {
+      if (audioProducerRef.current?.id === producerId) {
+        setMicPaused(false);
+      }
+    };
+
     socket.on("userJoined", onUserJoined);
     socket.on("userLeft", onUserLeft);
+    socket.on("producer-closed", onProducerClosed);
+    socket.on("producerPaused", onProducerPaused);
+    socket.on("producerResumed", onProducerResumed);
 
     return () => {
       socket.off("userJoined", onUserJoined);
       socket.off("userLeft", onUserLeft);
+      socket.off("producer-closed", onProducerClosed);
+      socket.off("producerPaused", onProducerPaused);
+      socket.off("producerResumed", onProducerResumed);
     };
   }, [socket]);
 
@@ -253,6 +290,15 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
     audioProducerRef.current?.close();
     audioProducerRef.current = undefined;
 
+    Object.values(audioEls.current).forEach((el) => {
+      const stream = el.srcObject;
+      if (stream instanceof MediaStream) {
+        stream.getTracks().forEach((t) => t.stop());
+      }
+      el.remove();
+    });
+    audioEls.current = {};
+
     deviceRef.current = undefined;
     consumedRef.current.clear();
     localStream?.getTracks().forEach((t) => t.stop());
@@ -293,15 +339,20 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
       },
     });
     setScreenStream(stream);
-    const prod = await sendTransportRef.current.produce({
+    const producer = await sendTransportRef.current.produce({
       track: stream.getVideoTracks()[0],
     });
-    stream.getVideoTracks()[0].onended = () => {
-      prod.close();
-      setScreenStream(null);
-    };
+    screenProducerRef.current = producer;
+    stream.getVideoTracks()[0].onended = () => stopScreenShare();
   };
+
   const stopScreenShare = () => {
+    if (screenProducerRef.current && socket && roomRef.current) {
+      const pid = screenProducerRef.current.id;
+      screenProducerRef.current.close();
+      socket.emit("producer-closed", { producerId: pid });
+      screenProducerRef.current = undefined;
+    }
     screenStream?.getTracks().forEach((t) => t.stop());
     setScreenStream(null);
   };
@@ -310,6 +361,7 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
     if (info.peerId === socket?.id) return;
     consume(info).catch(console.error);
   };
+  
   const onPeerLeft = ({ peerId }: { peerId: string }) => {
     setRemoteTracks((t) => t.filter((r) => r.peerId !== peerId));
   };
@@ -356,7 +408,7 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
   const fetchParticipants = (channelId: string) => {
     if (!socket) return;
     socket.emit("getParticipants", { channelId }, (resp: any) => {
-      console.log("getParticipants - ",resp)
+      console.log("getParticipants - ", resp);
       if (resp.status === "ok") {
         setParticipants(resp.participants);
       }
@@ -378,6 +430,7 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
           muted={settings.muted}
           ref={(el) => {
             if (el) {
+              audioEls.current[track.producerId] = el;
               el.srcObject = track.stream;
               const raw = Number(settings.volume);
               const finite = Number.isFinite(raw) ? raw : 1.0;
@@ -387,6 +440,26 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
         />
       );
     });
+
+  const toggleMute = () => {
+    if (!audioProducerRef.current || !socket || !roomRef.current) return;
+    const pid = audioProducerRef.current.id;
+    if (audioProducerRef.current.paused) {
+      audioProducerRef.current.resume();
+      socket.emit("producer-resume", {
+        roomId: roomRef.current,
+        producerId: pid,
+      });
+      setMicPaused(false);
+    } else {
+      audioProducerRef.current.pause();
+      socket.emit("producer-pause", {
+        roomId: roomRef.current,
+        producerId: pid,
+      });
+      setMicPaused(true);
+    }
+  };
 
   return (
     <MediaContext.Provider
@@ -407,6 +480,8 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
         setMuted,
         participants,
         fetchParticipants,
+        toggleMute,
+        isMicPaused,
       }}
     >
       {children}

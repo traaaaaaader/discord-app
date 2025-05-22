@@ -1,3 +1,5 @@
+// src/components/server/ServerChannel.tsx
+import React from "react";
 import {
   Channel,
   ChannelType,
@@ -9,10 +11,7 @@ import { cn } from "@/lib/utils";
 import { ActionTooltip } from "@/components/action-tooltip";
 import { ModalType, useModal } from "@/hooks/use-modal-store";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMedia } from "../providers/media-provider";
-import { UserAvatar } from "../user-avatar";
-import { Avatar, AvatarImage } from "../ui/avatar";
-import { useEffect } from "react";
+import { ParticipantList } from "./participant-list";
 
 interface ServerChannelProps {
   channel: Channel;
@@ -26,20 +25,17 @@ const iconMap = {
   [ChannelType.VIDEO]: Video,
 };
 
-export const ServerChannel = ({
+export const ServerChannel: React.FC<ServerChannelProps> = ({
   channel,
   server,
   role,
-}: ServerChannelProps) => {
+}) => {
   const params = useParams();
   const navigate = useNavigate();
-  const { participants, fetchParticipants } = useMedia();
-
   const { onOpen } = useModal();
   const Icon = iconMap[channel.type];
 
   const onClick = () => {
-    fetchParticipants(channel.id);
     navigate(`/servers/${server.id}/channels/${channel.id}`);
   };
 
@@ -67,6 +63,7 @@ export const ServerChannel = ({
         >
           {channel.name}
         </p>
+
         {channel.name !== "general" && role !== MemberRole.GUEST && (
           <div className="ml-auto flex items-center gap-x-2">
             <ActionTooltip label="Edit">
@@ -83,25 +80,14 @@ export const ServerChannel = ({
             </ActionTooltip>
           </div>
         )}
+
         {channel.name === "general" && (
           <Lock className="ml-auto w-4 h-4 text-zinc-500 dark:text-zinc-400" />
         )}
       </button>
-      <div className="px-2 text-xs text-zinc-400 flex flex-col">
-        {channel.type === ChannelType.AUDIO &&
-          (participants ?? [])
-            .filter((p) => p.channelId === channel.id)
-            .map((p) => (
-              <div key={p.username} className="flex items-center pl-4 py-1">
-                <Avatar className="w-6 h-6 rounded-full object-cover">
-                  <AvatarImage src={p.avatar} />
-                </Avatar>
-                <span className="pl-1.5 font-medium text-zinc-700 dark:text-zinc-300">
-                  {p.username}
-                </span>
-              </div>
-            ))}
-      </div>
+      {channel.type === ChannelType.AUDIO && (
+        <ParticipantList channelId={channel.id} />
+      )}
     </>
   );
 };
