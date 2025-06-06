@@ -20,22 +20,27 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConected] = useState(false);
 
   useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) return;
     const socketInstance = io(import.meta.env.VITE_WEBSOCKET_URL, {
       addTrailingSlash: false,
       path: "/socket/io",
+      auth: {
+        token: accessToken,
+      },
+      transports: ["websocket"],
     });
 
-    console.log(socketInstance)
+    console.log(socketInstance);
 
-    
     socketInstance.on("connect", () => {
       setIsConected(true);
     });
-    
+
     socketInstance.on("disconnect", () => {
       setIsConected(false);
     });
-    
+
     setSocket(socketInstance);
 
     return () => {

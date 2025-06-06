@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMedia } from "@/components/providers/media-provider";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,13 +18,22 @@ interface ParticipantListProps {
 export const ParticipantList: React.FC<ParticipantListProps> = ({
   channelId,
 }) => {
-  const { participants, remoteTracks, audioSettings, setMuted, setVolume } =
-    useMedia();
+  const {
+    participants,
+    fetchParticipants,
+    remoteTracks,
+    audioSettings,
+    setMuted,
+    setVolume,
+  } = useMedia();
+
+  useEffect(() => {
+    fetchParticipants(channelId);
+  }, []);
 
   return (
     <div className="px-2 text-xs text-zinc-400 flex flex-col">
       {participants
-        .filter((p) => p.channelId === channelId)
         .map(({ username, avatar }) => {
           const userTracks = remoteTracks.filter(
             (t) => t.username === username

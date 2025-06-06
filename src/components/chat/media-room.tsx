@@ -11,18 +11,17 @@ import {
 } from "lucide-react";
 import { useMedia } from "@/components/providers/media-provider";
 import { MediaContent } from "./media-content";
+import { User } from "../../utils/types/servers";
 
 interface MediaRoomProps {
   channelId: string;
-  username: string;
-  avatar: string;
+  user: User;
   setLeaved: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const MediaRoom: React.FC<MediaRoomProps> = ({
   channelId,
-  username,
-  avatar,
+  user,
   setLeaved,
 }) => {
   const {
@@ -42,7 +41,7 @@ export const MediaRoom: React.FC<MediaRoomProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-white text-black dark:bg-black dark:text-white p-4">
-      {joined && <MediaContent channelId={channelId} />}
+      {joined && <MediaContent />}
 
       {joined ? (
         <div className="mt-4 flex justify-center gap-4">
@@ -83,7 +82,7 @@ export const MediaRoom: React.FC<MediaRoomProps> = ({
           <Button
             variant="default"
             size="lg"
-            onClick={() => join(channelId, username, avatar)}
+            onClick={() => join(channelId, user)}
             disabled={isJoining || joined}
           >
             {isJoining

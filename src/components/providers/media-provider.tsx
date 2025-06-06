@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useSocket } from "./socket-provider";
 import { Device, types as mediasoupTypes } from "mediasoup-client";
+import { User } from "../../utils/types/servers";
 
 export type RemoteTrack = {
   peerId: string;
@@ -20,12 +21,13 @@ export type Participant = {
   channelId: string;
   username: string;
   avatar: string;
+  userId: string;
 };
 
 type MediaContextType = {
   joined: boolean;
   isJoining: boolean;
-  join: (channelId: string, username: string, avatar: string) => void;
+  join: (channelId: string, user: User) => void;
   leave: () => void;
   startCamera: () => void;
   stopCamera: () => void;
@@ -61,13 +63,14 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isMicPaused, setMicPaused] = useState(false);
 
   const roomRef = useRef<string | null>(null);
-  const localusernameRef = useRef<string>("");
-  const localUserAvatarRef = useRef<string>("");
+  const userRef = useRef<User>();
   const deviceRef = useRef<mediasoupTypes.Device>();
   const sendTransportRef = useRef<mediasoupTypes.Transport>();
   const recvTransportRef = useRef<mediasoupTypes.Transport>();
-  const audioProducerRef = useRef<mediasoupTypes.Producer>();
-  const screenProducerRef = useRef<mediasoupTypes.Producer>();
+  const audioProducerRef =
+    useRef<mediasoupTypes.Producer<mediasoupTypes.AppData>>();
+  const screenProducerRef =
+    useRef<mediasoupTypes.Producer<mediasoupTypes.AppData>>();
   const audioEls = useRef<Record<string, HTMLAudioElement>>({});
   const consumedRef = useRef<Set<string>>(new Set());
 
@@ -78,69 +81,115 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
       channelId: string;
       username: string;
       avatar: string;
+      userId: string;
     }) => {
+      console.log("User joined:", user);
+
       setParticipants((prev) => {
-        if (
-          prev.some(
-            (p) =>
-              p.username === user.username && p.channelId === user.channelId
-          )
-        ) {
-          return prev;
+        const existingIndex = prev.findIndex(
+          (p) => p.userId === user.userId && p.channelId === user.channelId
+        );
+
+        if (existingIndex !== -1) {
+          const updated = [...prev];
+          updated[existingIndex] = { ...updated[existingIndex], ...user };
+          return updated;
         }
+
         return [...prev, user];
       });
     };
 
-    const onUserLeft = (user: { channelId: string; username: string }) => {
-      setParticipants((prev) =>
-        prev.filter(
-          (p) =>
-            !(p.username === user.username && p.channelId === user.channelId)
-        )
-      );
+    const onUserLeft = (data: {
+      channelId: string;
+      username: string;
+      userId: string;
+    }) => {
+      console.log("User left:", data);
+
+      setParticipants((prev) => {
+        const filtered = prev.filter(
+          (p) => p.userId !== data.userId && p.channelId === data.channelId
+        );
+
+        console.log("Participants after user left:", filtered);
+        return filtered;
+      });
+
+      setRemoteTracks((tracks) => {
+        const filteredTracks = tracks.filter(
+          (track) => track.peerId !== data.userId
+        );
+        console.log("Remote tracks after user left:", filteredTracks);
+        return filteredTracks;
+      });
+
+      Object.keys(audioEls.current).forEach((producerId) => {
+        const track = remoteTracks.find(
+          (t) => t.producerId === producerId && t.peerId === data.userId
+        );
+        if (track) {
+          const el = audioEls.current[producerId];
+          if (el) {
+            const stream = el.srcObject;
+            if (stream instanceof MediaStream) {
+              stream.getTracks().forEach((t) => t.stop());
+            }
+            delete audioEls.current[producerId];
+          }
+        }
+      });
     };
 
     const onProducerClosed = ({ producerId }: { producerId: string }) => {
-      setRemoteTracks((t) => t.filter((r) => r.producerId !== producerId));
+      console.log("Producer closed:", producerId);
+      setRemoteTracks((tracks) => {
+        const filteredTracks = tracks.filter(
+          (r) => r.producerId !== producerId
+        );
+        console.log("Remote tracks after producer closed:", filteredTracks);
+        return filteredTracks;
+      });
+
       const el = audioEls.current[producerId];
       if (el) {
         const stream = el.srcObject;
         if (stream instanceof MediaStream) {
           stream.getTracks().forEach((t) => t.stop());
         }
+
         delete audioEls.current[producerId];
-        setRemoteTracks((tracks) =>
-          tracks.filter((r) => r.producerId !== producerId)
-        );
       }
     };
 
     const onProducerPaused = ({ producerId }: { producerId: string }) => {
+      console.log("Producer paused:", producerId);
       if (audioProducerRef.current?.id === producerId) {
         setMicPaused(true);
       }
     };
+
     const onProducerResumed = ({ producerId }: { producerId: string }) => {
+      console.log("Producer resumed:", producerId);
       if (audioProducerRef.current?.id === producerId) {
         setMicPaused(false);
       }
     };
 
-    socket.on("userJoined", onUserJoined);
-    socket.on("userLeft", onUserLeft);
+    socket.on("user-joined", onUserJoined);
+    socket.on("user-left", onUserLeft);
     socket.on("producer-closed", onProducerClosed);
-    socket.on("producerPaused", onProducerPaused);
-    socket.on("producerResumed", onProducerResumed);
+    socket.on("producer-paused", onProducerPaused);
+    socket.on("producer-resumed", onProducerResumed);
 
     return () => {
-      socket.off("userJoined", onUserJoined);
-      socket.off("userLeft", onUserLeft);
+      socket.off("user-joined", onUserJoined);
+      socket.off("user-left", onUserLeft);
       socket.off("producer-closed", onProducerClosed);
-      socket.off("producerPaused", onProducerPaused);
-      socket.off("producerResumed", onProducerResumed);
+      socket.off("producer-paused", onProducerPaused);
+      socket.off("producer-resumed", onProducerResumed);
     };
-  }, [socket]);
+  }, [socket, remoteTracks]);
 
   useEffect(() => {
     const handleUnload = () => {
@@ -150,7 +199,6 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => window.removeEventListener("beforeunload", handleUnload);
   }, [joined]);
 
-  // Handlers to adjust audio
   const setVolume = (producerId: string, volume: number) => {
     setAudioSettings((prev) => ({
       ...prev,
@@ -164,25 +212,26 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
     }));
   };
 
-  const join = (roomId: string, username: string, avatar: string) => {
+  const join = (roomId: string, user: User) => {
     if (!socket || !isConnected || joined || isJoining) return;
+
+    console.log("Joining room:", { roomId, user });
     setIsJoining(true);
 
     roomRef.current = roomId;
-    localusernameRef.current = username;
-    localUserAvatarRef.current = avatar;
+    userRef.current = user;
 
     socket.emit(
       "join-room",
       {
         roomId,
-        peerId: socket.id,
-        username: localusernameRef.current,
-        avatar: localUserAvatarRef.current,
       },
       async (resp: any) => {
         try {
-          if (resp.error) return console.error(resp.error);
+          if (resp.error) {
+            console.error("Join room error:", resp.error);
+            return;
+          }
           const {
             sendTransportOptions,
             recvTransportOptions,
@@ -191,7 +240,12 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
             participants,
           } = resp;
 
-          setParticipants(participants);
+          console.log("Join room response:", {
+            participantsCount: participants?.length,
+            existingProducersCount: existingProducers?.length,
+          });
+
+          setParticipants(participants || []);
 
           const device = new Device();
           await device.load({ routerRtpCapabilities: rtpCapabilities });
@@ -199,28 +253,27 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
 
           const sendT = device.createSendTransport(sendTransportOptions);
           sendTransportRef.current = sendT;
+
           sendT.on("connect", ({ dtlsParameters }, cb, eb) => {
             socket.emit(
               "connect-transport",
               {
-                transportId: sendT.id,
-                dtlsParameters,
                 roomId,
-                peerId: socket.id,
+                dtlsParameters,
+                transportId: sendT.id,
               },
               (r: any) => (r.connected ? cb() : eb(r.error))
             );
           });
+
           sendT.on("produce", ({ kind, rtpParameters }, cb) => {
             socket.emit(
               "produce",
               {
-                transportId: sendT.id,
-                kind,
-                rtpParameters,
                 roomId,
-                peerId: socket.id,
-                username: localusernameRef.current,
+                kind,
+                transportId: sendT.id,
+                rtpParameters,
               },
               (pid: string) => cb({ id: pid })
             );
@@ -228,42 +281,50 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
 
           const recvT = device.createRecvTransport(recvTransportOptions);
           recvTransportRef.current = recvT;
+
           recvT.on("connect", ({ dtlsParameters }, cb, eb) => {
             socket.emit(
               "connect-transport",
               {
-                transportId: recvT.id,
-                dtlsParameters,
                 roomId,
-                peerId: socket.id,
+                dtlsParameters,
+                transportId: recvT.id,
               },
               (r: any) => (r.connected ? cb() : eb(r.error))
             );
           });
 
-          const audioStream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
-
-          // Проверяем существование предыдущего продюсера
-          if (!audioProducerRef.current) {
-            audioProducerRef.current = await sendT.produce({
-              track: audioStream.getAudioTracks()[0],
+          try {
+            const audioStream = await navigator.mediaDevices.getUserMedia({
+              audio: true,
             });
-          }
-          // setLocalStream(audioStream);
 
-          for (const p of existingProducers.filter(
-            (p: any) => p.peerId !== socket.id
-          )) {
-            await consume(p);
+            if (!audioProducerRef.current) {
+              audioProducerRef.current = await sendT.produce({
+                track: audioStream.getAudioTracks()[0],
+              });
+              console.log(
+                "Audio producer created:",
+                audioProducerRef.current.id
+              );
+            }
+          } catch (audioError) {
+            console.error("Failed to get audio stream:", audioError);
+          }
+
+          for (const producer of existingProducers || []) {
+            if (producer.peerId !== user.id) {
+              await consume(producer);
+            }
           }
 
           socket.on("new-producer", onNewProducer);
           socket.on("peer-left", onPeerLeft);
+
           setJoined(true);
+          console.log("Successfully joined room");
         } catch (error) {
-          console.error(error);
+          console.error("Join room error:", error);
         } finally {
           setIsJoining(false);
         }
@@ -273,11 +334,20 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const leave = () => {
     if (!socket || !joined || !roomRef.current) return;
-    socket.emit("leave-room", { roomId: roomRef.current }, (resp: any) => {
-      if (resp.error) return console.error(resp.error);
+
+    console.log("Leaving room:", roomRef.current);
+
+    socket.emit("leave-room", (resp: any) => {
+      if (resp.error) {
+        console.error("Leave room error:", resp.error);
+        return;
+      }
+
+      console.log("Leave room response:", resp);
       const { participants } = resp;
-      setParticipants(participants);
+      setParticipants(participants || []);
     });
+
     socket.off("new-producer", onNewProducer);
     socket.off("peer-left", onPeerLeft);
 
@@ -295,127 +365,222 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
       if (stream instanceof MediaStream) {
         stream.getTracks().forEach((t) => t.stop());
       }
-      el.remove();
     });
     audioEls.current = {};
 
     deviceRef.current = undefined;
     consumedRef.current.clear();
+
     localStream?.getTracks().forEach((t) => t.stop());
     screenStream?.getTracks().forEach((t) => t.stop());
 
     setLocalStream(null);
     setScreenStream(null);
+    console.log("Left room successfully");
   };
 
   const startCamera = async () => {
     if (!sendTransportRef.current) return;
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       setLocalStream(stream);
-      await sendTransportRef.current.produce({
+
+      const producer = await sendTransportRef.current.produce({
         track: stream.getVideoTracks()[0],
       });
+
+      console.log("Camera started, producer created:", producer.id);
     } catch (error: unknown) {
-      console.log(error);
+      console.error("Failed to start camera:", error);
     }
   };
+
   const stopCamera = () => {
+    console.log("Stopping camera");
     localStream?.getTracks().forEach((t) => t.stop());
     setLocalStream(null);
   };
 
   const startScreenShare = async () => {
     if (!sendTransportRef.current) return;
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      audio: true,
-      video: {
-        width: {
-          ideal: 1920,
+
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        audio: true,
+        video: {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
         },
-        height: {
-          ideal: 1080,
-        },
-      },
-    });
-    setScreenStream(stream);
-    const producer = await sendTransportRef.current.produce({
-      track: stream.getVideoTracks()[0],
-    });
-    screenProducerRef.current = producer;
-    stream.getVideoTracks()[0].onended = () => stopScreenShare();
+      });
+
+      setScreenStream(stream);
+
+      const producer = await sendTransportRef.current.produce({
+        track: stream.getVideoTracks()[0],
+      });
+
+      screenProducerRef.current = producer;
+      console.log("Screen share started, producer created:", producer.id);
+
+      stream.getVideoTracks()[0].onended = () => {
+        console.log("Screen share ended by user");
+        stopScreenShare();
+      };
+    } catch (error) {
+      console.error("Failed to start screen share:", error);
+    }
   };
 
-  const stopScreenShare = () => {
+  const stopScreenShare = async () => {
     if (screenProducerRef.current && socket && roomRef.current) {
-      const pid = screenProducerRef.current.id;
+      console.log("Stopping screen share");
+
+      const producerId = (
+        screenProducerRef.current.id as unknown as { producerId: string }
+      ).producerId;
       screenProducerRef.current.close();
-      socket.emit("producer-closed", { producerId: pid });
+
+      socket.emit("producer-close", {
+        roomId: roomRef.current,
+        producerId: producerId,
+      });
+
       screenProducerRef.current = undefined;
     }
+
     screenStream?.getTracks().forEach((t) => t.stop());
     setScreenStream(null);
   };
 
   const onNewProducer = (info: any) => {
-    if (info.peerId === socket?.id) return;
+    console.log("New producer:", info);
+    if (info.peerId === userRef.current?.id) return;
     consume(info).catch(console.error);
   };
-  
+
   const onPeerLeft = ({ peerId }: { peerId: string }) => {
-    setRemoteTracks((t) => t.filter((r) => r.peerId !== peerId));
+    console.log("Peer left (WebRTC):", peerId);
+
+    setRemoteTracks((tracks) => {
+      const filteredTracks = tracks.filter((r) => r.peerId !== peerId);
+      console.log("Remote tracks after peer left:", filteredTracks);
+      return filteredTracks;
+    });
+
+    Object.keys(audioEls.current).forEach((producerId) => {
+      const track = remoteTracks.find(
+        (t) => t.producerId === producerId && t.peerId === peerId
+      );
+      if (track) {
+        const el = audioEls.current[producerId];
+        if (el) {
+          const stream = el.srcObject;
+          if (stream instanceof MediaStream) {
+            stream.getTracks().forEach((t) => t.stop());
+          }
+          delete audioEls.current[producerId];
+        }
+      }
+    });
   };
 
   const consume = async (info: any) => {
     if (!socket || !deviceRef.current || !recvTransportRef.current) return;
+
     const key = `${info.peerId}:${info.producerId}:${info.kind}`;
     if (consumedRef.current.has(key)) return;
+
+    console.log("Consuming:", info);
     consumedRef.current.add(key);
 
     socket.emit(
       "consume",
       {
-        transportId: recvTransportRef.current.id,
-        producerId: info.producerId,
         roomId: roomRef.current,
-        peerId: socket.id,
+        producerId: info.producerId,
         rtpCapabilities: deviceRef.current.rtpCapabilities,
+        transportId: recvTransportRef.current.id,
       },
       async (res: any) => {
-        if (res.error) return console.error(res.error);
-        const consumer = await recvTransportRef.current!.consume({
-          id: res.consumerData.id,
-          producerId: res.consumerData.producerId,
-          kind: res.consumerData.kind,
-          rtpParameters: res.consumerData.rtpParameters,
-        });
-        await consumer.resume();
-        const stream = new MediaStream([consumer.track]);
-        setRemoteTracks((prev) => [
-          ...prev,
-          {
+        if (res.error) {
+          console.error("Consume error:", res.error);
+          return;
+        }
+
+        try {
+          const consumer = await recvTransportRef.current!.consume({
+            id: res.consumerData.id,
+            producerId: res.consumerData.producerId,
+            kind: res.consumerData.kind,
+            rtpParameters: res.consumerData.rtpParameters,
+          });
+
+          await consumer.resume();
+          const stream = new MediaStream([consumer.track]);
+
+          console.log("Consumer created:", {
             peerId: info.peerId,
-            username: info.username,
             producerId: info.producerId,
             kind: info.kind,
-            stream,
-          },
-        ]);
+          });
+
+          setRemoteTracks((prev) => [
+            ...prev,
+            {
+              peerId: info.peerId,
+              username: info.username || "Unknown",
+              producerId: info.producerId,
+              kind: info.kind,
+              stream,
+            },
+          ]);
+        } catch (error) {
+          console.error("Failed to create consumer:", error);
+        }
       }
     );
   };
 
   const fetchParticipants = (channelId: string) => {
     if (!socket) return;
-    socket.emit("getParticipants", { channelId }, (resp: any) => {
-      console.log("getParticipants - ", resp);
+
+    console.log("Fetching participants for channel:", channelId);
+
+    socket.emit("get-participants", { channelId }, (resp: any) => {
+      console.log("Get participants response:", resp);
       if (resp.status === "ok") {
-        setParticipants(resp.participants);
+        setParticipants(resp.participants || []);
       }
     });
   };
 
-  // render audio elements
+  const toggleMute = () => {
+    if (!audioProducerRef.current || !socket || !roomRef.current) return;
+
+    const producerId = (
+      audioProducerRef.current.id as unknown as { producerId: string }
+    ).producerId;
+
+    if (audioProducerRef.current.paused) {
+      console.log("Resuming microphone");
+      audioProducerRef.current.resume();
+      socket.emit("producer-resume", {
+        roomId: roomRef.current,
+        producerId: producerId,
+      });
+      setMicPaused(false);
+    } else {
+      console.log("Pausing microphone");
+      audioProducerRef.current.pause();
+      socket.emit("producer-pause", {
+        roomId: roomRef.current,
+        producerId: producerId,
+      });
+      setMicPaused(true);
+    }
+  };
+
   const audioElements = remoteTracks
     .filter((t) => t.kind === "audio")
     .map((track) => {
@@ -435,31 +600,13 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
               const raw = Number(settings.volume);
               const finite = Number.isFinite(raw) ? raw : 1.0;
               el.volume = Math.min(Math.max(finite, 0), 1);
+            } else {
+              delete audioEls.current[track.producerId];
             }
           }}
         />
       );
     });
-
-  const toggleMute = () => {
-    if (!audioProducerRef.current || !socket || !roomRef.current) return;
-    const pid = audioProducerRef.current.id;
-    if (audioProducerRef.current.paused) {
-      audioProducerRef.current.resume();
-      socket.emit("producer-resume", {
-        roomId: roomRef.current,
-        producerId: pid,
-      });
-      setMicPaused(false);
-    } else {
-      audioProducerRef.current.pause();
-      socket.emit("producer-pause", {
-        roomId: roomRef.current,
-        producerId: pid,
-      });
-      setMicPaused(true);
-    }
-  };
 
   return (
     <MediaContext.Provider

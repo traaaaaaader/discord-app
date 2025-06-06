@@ -9,10 +9,8 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { cn } from "../../lib/utils";
 
-interface MediaContentProps {
-  channelId: string;
-}
 
 type VideoTile = {
   key: string;
@@ -27,7 +25,7 @@ type AudioTile = {
   tracks: { producerId: string }[];
 };
 
-export const MediaContent: React.FC<MediaContentProps> = ({ channelId }) => {
+export const MediaContent: React.FC = () => {
   const {
     localStream,
     screenStream,
@@ -37,7 +35,9 @@ export const MediaContent: React.FC<MediaContentProps> = ({ channelId }) => {
     setVolume,
     participants,
   } = useMedia();
-  
+
+  console.log(remoteTracks)
+
   const videoTiles: VideoTile[] = [
     ...(screenStream
       ? [{ key: "screen", stream: screenStream, name: "Screen" }]
@@ -53,7 +53,6 @@ export const MediaContent: React.FC<MediaContentProps> = ({ channelId }) => {
   const audioTiles: AudioTile[] = videoTiles.length
     ? []
     : participants
-        .filter((p) => p.channelId === channelId)
         .map((p) => ({
           key: p.username,
           username: p.username,
@@ -63,16 +62,20 @@ export const MediaContent: React.FC<MediaContentProps> = ({ channelId }) => {
             .map((t) => ({ producerId: t.producerId })),
         }));
 
-  const count = videoTiles.length || audioTiles.length;
-  const gridCols = `grid-cols-${Math.ceil(Math.sqrt(count))}`;
+  const gridCols = videoTiles.length || audioTiles.length;
 
   const tiles = videoTiles.length ? videoTiles : audioTiles;
 
-  console.log("remoteTracks - ", remoteTracks)
-
   return (
-    <div className={`grid gap-2 flex-1 grid-cols-2`}>
-      {tiles.map((tile) => {
+    <div
+      className={cn("grid", "gap-2", "flex-1", {
+        "grid-cols-1": gridCols === 1,
+        "grid-cols-2": gridCols === 2,
+        "grid-cols-3": gridCols === 3,
+        "grid-cols-4": gridCols === 4,
+      })}
+    >
+      {tiles.slice(0, 16).map((tile) => {
         if ("stream" in tile) {
           return (
             <div

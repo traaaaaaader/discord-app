@@ -69,7 +69,7 @@ const ChannelPage = () => {
   const { join, joined } = useMedia();
   useEffect(() => {
     if (user && isAudio && !joined && !leaved) {
-      join(channelId!, user.name, user.imageUrl);
+      join(channelId!, user);
     }
   }, [user, isAudio, joined, join, channelId]);
 
@@ -130,8 +130,7 @@ const ChannelPage = () => {
             <MediaRoom
               setLeaved={setLeaved}
               channelId={channel.id}
-              username={user.name}
-              avatar={user.imageUrl}
+              user={user}
             />
           )}
         </div>
