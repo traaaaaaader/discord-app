@@ -1,8 +1,7 @@
 import { ShieldAlert, ShieldCheck } from "lucide-react";
 import { Member, MemberRole, User } from "@/utils/types/servers";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 
 const roleIconMap = {
@@ -17,37 +16,27 @@ interface ServerMemberProps {
   member: Member & { user: User };
 }
 
-export const ServerMember = ({ member } : ServerMemberProps) => {
-  const params = useParams();
+export const ServerMember = ({ member }: ServerMemberProps) => {
   const navigate = useNavigate();
 
   const icon = roleIconMap[member.role];
 
   const onClick = () => {
-    navigate(`/`);
+    navigate(`/`); //TODO
   };
 
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1",
-        params?.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700"
-      )}
+      className={
+        "group px-2 py-2 rounded-md flex items-center gap-x-2 w-full text-muted-foreground hover:bg-accent/10 hover:text-accent-foreground transition mb-1 cursor-pointer"
+      }
     >
       <UserAvatar
         src={member.user.imageUrl}
-        className="h-8 w-8 md:h-8 md:w-8"
+        className="md:h-9 md:w-9"
       />
-      <p
-        className={cn(
-          "font-semibold text-sm text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 trandition",
-          params?.memberId === member.id &&
-            "text-primary dark:text-zinc-200 dark:group-hover:text-white"
-        )}
-      >
-        {member.user.name}
-      </p>
+      <p className={"font-semibold text-md"}>{member.user.name}</p>
       {icon}
     </button>
   );

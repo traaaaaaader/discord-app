@@ -99,7 +99,7 @@ const ChannelPage = () => {
           channel.type !== ChannelType.AUDIO ? "md:pr-60" : "md:pr-0"
         )}
       >
-        <div className="flex flex-col h-screen bg-white dark:bg-[#313338]">
+        <div className="flex flex-col h-screen bg-background">
           <ChatHeader
             name={channel.name}
             serverId={channel.serverId}

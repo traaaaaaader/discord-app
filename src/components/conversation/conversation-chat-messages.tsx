@@ -4,14 +4,12 @@ import { Loader2, ServerCrash } from "lucide-react";
 
 import { useChatQuery } from "@/hooks/use-chat-query";
 import { useChatSocket } from "@/hooks/use-chat-socket";
-// import { ChatWelcome } from "./chat-welcome";
-// import { ChatItem } from "./chat-item";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 import { ChatWelcome } from "../chat/chat-welcome";
 import { ConversationChatItem } from "./conversation-chat-item";
 import { ConversationMessage } from "../../utils/types/chat";
 
-const DATE_FORMAT = "dd-MM-yyyy, HH:mm";
+const DATE_FORMAT = "dd.MM.yyyy, HH:mm";
 
 interface ConversationChatMessagesProps {
   name: string;
@@ -61,8 +59,8 @@ export const ConversationChatMessages = ({
   if (status === "pending") {
     return (
       <div className="flex flex-col flex-1 justify-center items-center">
-        <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <Loader2 className="h-7 w-7 text-foreground animate-spin my-4" />
+        <p className="text-xs text-foreground">
           Loading messages...
         </p>
       </div>
@@ -72,8 +70,8 @@ export const ConversationChatMessages = ({
   if (status === "error") {
     return (
       <div className="flex flex-col flex-1 justify-center items-center">
-        <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <ServerCrash className="h-7 w-7 text-foreground my-4" />
+        <p className="text-xs text-foreground">
           Something went wrong!
         </p>
       </div>

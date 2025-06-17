@@ -55,19 +55,19 @@ const InvitePage = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <Card>
-        <CardContent className="rounded-lg bg-white text-black p-0 overflow-hidden min-w-md">
+        <CardContent className="rounded-lg bg-card text-foreground p-0 overflow-hidden min-w-md">
           <CardHeader className="pt-8 px-6">
             <CardTitle className="text-2xl text-center font-bold">
               Приглашение на сервер
             </CardTitle>
           </CardHeader>
-          <CardDescription className="pb-6 text-center text-zinc-500">
+          <CardDescription className="pb-6 text-center text-muted-foreground">
             <p>Вас пригласили на сервер. </p>
             <p>Хотите вступить?</p>
           </CardDescription>
-          <CardFooter className="bg-gray-100 px-6 py-4 flex flex-col">
+          <CardFooter className="bg-secondary px-6 py-4 flex flex-col">
             <div className="flex justify-end mb-2 mx-auto w-full">
-              <Button className="ml-4" variant="primary" onClick={accept}>
+              <Button className="ml-4" variant="default" onClick={accept}>
                 Принять
               </Button>
             </div>

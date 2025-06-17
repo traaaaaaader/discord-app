@@ -82,13 +82,13 @@ export const CreateConversationModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-card text-foreground p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Start conversation with user
+            Начать беседу
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
-            Enter user name to start conversation.
+          <DialogDescription className="text-center text-muted-foreground">
+            Введите имя пользователя, чтобы начать беседу.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -99,14 +99,14 @@ export const CreateConversationModal = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                      User name
+                    <FormLabel className="text-card-foreground">
+                      Имя пользователя
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
-                        placeholder="Enter user name"
+                        className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
+                        placeholder="Введите имя пользователя"
                         {...field}
                       />
                     </FormControl>
@@ -115,9 +115,9 @@ export const CreateConversationModal = () => {
                 )}
               />
             </div>
-            <DialogFooter className="bg-gray-100 px-6 py-4">
-              <Button variant="primary" disabled={isLoading}>
-                Create
+            <DialogFooter className="bg-secondary px-6 py-4">
+              <Button variant="default" disabled={isLoading}>
+                Начать
               </Button>
             </DialogFooter>
           </form>

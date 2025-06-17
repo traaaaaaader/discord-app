@@ -54,17 +54,13 @@ export const CreateServerModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
+      const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         navigate("/auth/login");
         return;
       }
 
-      await ServersService.create(
-        values.name, 
-        values.imageUrl,
-        accessToken
-      );
+      await ServersService.create(values.name, values.imageUrl, accessToken);
 
       form.reset();
       navigate(0);
@@ -81,14 +77,14 @@ export const CreateServerModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-card text-foreground p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Customize your server
+            Добавить сервер
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
-            Give yor servre personality with a name and an image. You can
-            alwayas change it later.
+          <DialogDescription className="text-center text-muted-foreground">
+            Добавьте уникальности своему серверу, добавив уникальную картинку и
+            название. Их можно будет поменять позже.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -115,13 +111,13 @@ export const CreateServerModal = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                      Server name
+                    <FormLabel className="text-card-foreground">
+                      Название сервера
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
+                        className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
                         placeholder="Enter server name"
                         {...field}
                       />
@@ -131,9 +127,9 @@ export const CreateServerModal = () => {
                 )}
               />
             </div>
-            <DialogFooter className="bg-gray-100 px-6 py-4">
-              <Button variant="primary" disabled={isLoading}>
-                Create
+            <DialogFooter className="bg-secondary px-6 py-4">
+              <Button variant="default" disabled={isLoading}>
+                Создать
               </Button>
             </DialogFooter>
           </form>

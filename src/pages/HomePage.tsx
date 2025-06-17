@@ -59,14 +59,14 @@ const HomePage = () => {
 
   return (
     <div className="h-full">
-      <div className="hidden md:flex h-full w-70 fixed inset-y-0">
+      <div className="hidden md:flex h-full w-60 fixed inset-y-0">
         <ConversationSidebar
           conversations={conversations}
           updateConversationId={setConversationId}
         />
       </div>
-      <main className="h-full md:pl-70">
-        <div className="flex flex-col h-screen bg-white dark:bg-[#313338]">
+      <main className="h-full md:pl-60">
+        <div className="flex flex-col h-screen bg-background ">
           {partner && conversation && (
             <>
               <ChatHeader

@@ -16,7 +16,6 @@ import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { MessagesService } from "@/services";
 
-
 interface ChatItemProps {
   id: string;
   content: string;
@@ -82,7 +81,7 @@ export const ChatItem = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
+      const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) return;
 
       await MessagesService.update(
@@ -117,7 +116,7 @@ export const ChatItem = ({
   const isFile = fileUrl && !isImage;
 
   return (
-    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
+    <div className="relative group flex items-center hover:bg-secondary-foreground/5 p-4 transition w-full rounded-2xl overflow-hidden">
       <div className="group flex gap-x-2 items-start w-full">
         <div className="cursor-pointer hover:drop-shadow-md transition">
           <UserAvatar src={member.user.imageUrl} />
@@ -125,16 +124,15 @@ export const ChatItem = ({
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm hover:underline cursor-pointer">
+              <p className="font-semibold text-md hover:underline cursor-pointer mr-1">
+                {/* TODO */}
                 {member.user.name}
               </p>
               <ActionTooltip label={member.role}>
                 {roleIconMap[member.role]}
               </ActionTooltip>
             </div>
-            <span className="text-sx text-zinc-500 dark:text-zinc-400">
-              {timestap}
-            </span>
+            <span className="text-sx text-muted-foreground">{timestap}</span>
           </div>
           {isImage && (
             <a
@@ -157,7 +155,7 @@ export const ChatItem = ({
                 href={fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline break-all"
+                className="ml-2 text-sm text-accent hover:underline break-all"
               >
                 PDF File
               </a>
@@ -166,14 +164,13 @@ export const ChatItem = ({
           {!fileUrl && !isEditing && (
             <p
               className={cn(
-                "text-sm test-zinc-600 dark:text-zinc-300",
-                deleted &&
-                  "italic text-zinc-500 dark:text-zinc-400 text-sm mt-1"
+                "text-md text-foreground",
+                deleted && "italic text-muted-foreground text-sm mt-1"
               )}
             >
               {content}
               {isUpdated && !deleted && (
-                <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
+                <span className="text-[10px] mx-2 text-muted-foreground">
                   (edited)
                 </span>
               )}
@@ -193,7 +190,8 @@ export const ChatItem = ({
                       <div className="relative w-full">
                         <Input
                           disabled={isLoading}
-                          className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                          className="p-2
+                          bg-input border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground"
                           placeholder="Edited message"
                           {...field}
                         />
@@ -201,24 +199,24 @@ export const ChatItem = ({
                     </FormItem>
                   )}
                 />
-                <Button disabled={isLoading} size="sm" variant="primary">
-                  Save
+                <Button disabled={isLoading} size="sm" variant="default">
+                  Сохранить
                 </Button>
               </form>
-              <span className="text-[10px] mt-1 text-zinc-400">
-                Press escape to cancel, enter to save
+              <span className="text-[10px] mt-1 text-muted-foreground">
+                Нажмите esc чтобы выйти, enter чтобы сохранить
               </span>
             </Form>
           )}
         </div>
       </div>
-      {canDeleteMesage && (
-        <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
+      {!isEditing && canDeleteMesage && (
+        <div className="hidden group-hover:flex items-center p-2 gap-x-2 bg-secondary text-secondary-foreground border rounded-sm">
           {canEditMessage && (
             <ActionTooltip label="Edit">
               <Edit
                 onClick={() => setIsEditing(true)}
-                className="cersor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+                className="cursor-pointer ml-auto w-5 h-5 transition"
               />
             </ActionTooltip>
           )}
@@ -229,7 +227,7 @@ export const ChatItem = ({
                   query: { messageId: id, ...socketQuery },
                 })
               }
-              className="cersor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+              className="cursor-pointer ml-auto w-5 h-5 transition"
             />
           </ActionTooltip>
         </div>

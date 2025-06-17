@@ -40,14 +40,14 @@ export const MediaRoom: React.FC<MediaRoomProps> = ({
   } = useMedia();
 
   return (
-    <div className="flex flex-col h-full bg-white text-black dark:bg-black dark:text-white p-4">
+    <div className="flex flex-col h-full bg-background text-foreground  p-4">
       {joined && <MediaContent />}
 
       {joined ? (
         <div className="mt-4 flex justify-center gap-4">
           <Button
             size="lg"
-            variant={isMicPaused ? "destructive" : "secondary"}
+            variant={isMicPaused ? "destructive" : "success"}
             onClick={toggleMute}
           >
             {isMicPaused ? <MicOff size={20} /> : <Mic size={20} />}
@@ -61,7 +61,7 @@ export const MediaRoom: React.FC<MediaRoomProps> = ({
           </Button>
           <Button
             size="lg"
-            variant={screenStream ? "primary" : "secondary"}
+            variant={screenStream ? "default" : "secondary"}
             onClick={screenStream ? stopScreenShare : startScreenShare}
           >
             {screenStream ? <MonitorStop size={20} /> : <MonitorUp size={20} />}

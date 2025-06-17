@@ -50,25 +50,25 @@ export const DeleteServerModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-card text-foreground p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Delete Server
+            Удалить сервер
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
-            Are you sure you want to do this? <br />
-            <span className="font-semibold text-indigo-500">
+            Вы уверены, что хотите сделать это? <br />
+            <span className="font-semibold text-primary">
               {server?.name}
             </span>{" "}
-            will be permanently deleted.
+            будет удален без возможности восстановления.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="bg-gray-100 px-6 py-4">
+        <DialogFooter className="bg-secondary px-6 py-4">
           <div className="flex items-center justify-between w-full">
             <Button disabled={isLoading} onClick={onClose} variant="ghost">
-              Cancel
+              Отменить
             </Button>
-            <Button disabled={isLoading} onClick={onClick} variant="primary">
+            <Button disabled={isLoading} onClick={onClick} variant="default">
               Confirm
             </Button>
           </div>

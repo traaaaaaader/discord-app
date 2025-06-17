@@ -76,7 +76,7 @@ const RegisterPage = () => {
 
   return (
     <Card>
-      <CardContent className="rounded-lg bg-white text-black p-0 overflow-hidden min-w-md">
+      <CardContent className="rounded-lg bg-card text-foreground p-0 overflow-hidden min-w-md">
         <CardHeader className="pt-8 px-6">
           <CardTitle className="text-2xl text-center font-bold">
             Создать учетную запись
@@ -106,13 +106,13 @@ const RegisterPage = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
+                    <FormLabel className="text-card-foreground">
                       E-mail
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
+                        className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
                         {...field}
                       />
                     </FormControl>
@@ -125,13 +125,13 @@ const RegisterPage = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
+                    <FormLabel className="text-card-foreground">
                       Отображаемое имя
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
+                        className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
                         {...field}
                       />
                     </FormControl>
@@ -144,13 +144,13 @@ const RegisterPage = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
+                    <FormLabel className="text-card-foreground">
                       Пароль
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
+                        className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
                         type="password"
                         {...field}
                       />
@@ -160,17 +160,17 @@ const RegisterPage = () => {
                 )}
               />
             </div>
-            <CardFooter className="bg-gray-100 px-6 py-4 flex flex-col">
+            <CardFooter className="bg-secondary px-6 py-4 flex flex-col">
               <div className="flex justify-between items-center mb-2 mx-auto w-full">
                 <CardDescription className="text-center text-zinc-500">
                   <NavLink
                     to={"/auth/login"}
-                    className="text-indigo-500 dark:text-indigo-400"
+                    className="text-accent"
                   >
                     Уже зарегистрированы?
                   </NavLink>
                 </CardDescription>
-                <Button variant="primary" disabled={isLoading}>
+                <Button variant="default" disabled={isLoading}>
                   Зарегистрироваться
                 </Button>
               </div>

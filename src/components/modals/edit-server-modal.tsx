@@ -62,7 +62,7 @@ export const EditServerModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
+      const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         navigate("/auth/login");
         return;
@@ -94,14 +94,14 @@ export const EditServerModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-card text-foreground p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Customize your server
+            Изменить сервер
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
-            Give yor servre personality with a name and an image. You can
-            alwayas change it later.
+          <DialogDescription className="text-center text-muted-foreground">
+            Добавьте уникальности своему серверу, добавив уникальную картинку и
+            название. Их можно будет поменять позже.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -128,13 +128,13 @@ export const EditServerModal = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                      Server name
+                    <FormLabel className="text-card-foreground">
+                      Название сервера
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
+                        className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
                         placeholder="Enter server name"
                         {...field}
                       />
@@ -144,9 +144,9 @@ export const EditServerModal = () => {
                 )}
               />
             </div>
-            <DialogFooter className="bg-gray-100 px-6 py-4">
-              <Button variant="primary" disabled={isLoading}>
-                Save
+            <DialogFooter className="bg-secondary px-6 py-4">
+              <Button variant="default" disabled={isLoading}>
+                Сохранить
               </Button>
             </DialogFooter>
           </form>

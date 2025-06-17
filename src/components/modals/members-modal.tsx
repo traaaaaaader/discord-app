@@ -112,13 +112,13 @@ export const MembersModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white text-black overflow-hidden">
+      <DialogContent className="bg-card text-foreground overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Manage members
+            Управление участниками
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
-            {server?.members?.length} Members
+          <DialogDescription className="text-center text-muted-foreground">
+            {server?.members?.length} Участника
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="mt-8 max-h-[420px] pr-6">
@@ -126,11 +126,11 @@ export const MembersModal = () => {
             <div key={member.id} className="flex items-center gap-x-2 mb-6">
               <UserAvatar src={member.user?.imageUrl} />
               <div className="fles flex-col gap-y-1">
-                <div className="text-xs font-serif flex items-center gap-x-1">
+                <div className="text-md font-serif flex items-center gap-x-1">
                   {member.user?.name}
                   {roleIconMap[member.role]}
                 </div>
-                <p className="text-xs text-zinc-500">{member.user?.email}</p>
+                <p className="text-xs text-muted-foreground">{member.user?.email}</p>
               </div>
               {server.userId !== member.userId && loadingId !== member.id && (
                 <div className="ml-auto">
@@ -142,7 +142,7 @@ export const MembersModal = () => {
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger className="flex items-center">
                           <ShieldQuestion className="w-4 h-4 mr-2" />
-                          <span>Role</span>
+                          <span>Роль</span>
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                           <DropdownMenuSubContent>
@@ -152,7 +152,7 @@ export const MembersModal = () => {
                               }
                             >
                               <Shield className="h-4 w-4 mr-2" />
-                              Guest
+                              Участник
                               {member.role === "GUEST" && (
                                 <Check className="h-4 w-4 ml-auto" />
                               )}
@@ -163,7 +163,7 @@ export const MembersModal = () => {
                               }
                             >
                               <ShieldCheck className="h-4 w-4 mr-2" />
-                              MODERATOR
+                              Администратор
                               {member.role === "MODERATOR" && (
                                 <Check className="h-4 w-4 ml-auto" />
                               )}
@@ -174,14 +174,14 @@ export const MembersModal = () => {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => onKick(member.id)}>
                         <Gavel className="h-4 w-4 mr-2" />
-                        Kick
+                        Выгнать
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               )}
               {loadingId === member.id && (
-                <Loader2 className="animate-spin text-zinc-500 ml-auto w-4 h-4" />
+                <Loader2 className="animate-spin text-muted-foreground ml-auto w-4 h-4" />
               )}
             </div>
           ))}

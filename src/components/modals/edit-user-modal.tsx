@@ -97,10 +97,10 @@ export const EditUserModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-card text-foreground p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Edit your profile
+            Изменить профиль
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -127,14 +127,14 @@ export const EditUserModal = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                      User name
+                    <FormLabel className="text-card-foreground">
+                      Имя пользователя
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text black focus-visible:ring-offset-0"
-                        placeholder="Enter new user name"
+                        className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
+                        placeholder="Введите имя пользователя"
                         {...field}
                       />
                     </FormControl>
@@ -143,12 +143,12 @@ export const EditUserModal = () => {
                 )}
               />
             </div>
-            <DialogFooter className="bg-gray-100 px-6 py-4">
+            <DialogFooter className="bg-secondary px-6 py-4">
               <Button type="button" variant="google" onClick={logout}>
-                Logout
+                Выйти
               </Button>
-              <Button variant="primary" disabled={isLoading}>
-                Update
+              <Button variant="default" disabled={isLoading}>
+                Сохранить
               </Button>
             </DialogFooter>
           </form>

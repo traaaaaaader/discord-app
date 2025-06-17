@@ -7,7 +7,6 @@ export enum MemberRole {
 export enum ChannelType {
   TEXT = "TEXT",
   AUDIO = "AUDIO",
-  VIDEO = "VIDEO",
 }
 
 export interface User {

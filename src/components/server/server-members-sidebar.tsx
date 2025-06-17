@@ -24,7 +24,7 @@ export const ServerMembersSidebar = ({
 	const role = server.members?.find(member => member.userId === user.id)?.role;
 
   return (
-    <div className="flex flex-col h-full text-primary w-full dark:bg-[#2B2D31] bg-[#F2F3F5]">
+    <div className="flex flex-col h-full text-foreground w-full bg-card">
       <ScrollArea className="flex-1 px-3 py-2">
         {!!server.members?.length && (
           <div className="mb-2">

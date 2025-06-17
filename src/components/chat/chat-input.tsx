@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FileIcon, Plus, X } from "lucide-react";
+import { FileIcon, Paperclip, X } from "lucide-react";
 import { EmojiPicker } from "@/components/emoji-picker";
 import {
   ConversationMessagesService,
@@ -77,7 +77,7 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
+      const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) return;
 
       if (type === "channel") {
@@ -114,7 +114,7 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
               <img src={fileUrl} alt="Upload" className="rounded-md absolute" />
               <button
                 onClick={handleFileDelete}
-                className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm cursor-pointer"
+                className="bg-destructive text-white p-1 rounded-full absolute top-0 right-0 shadow-sm cursor-pointer"
                 type="button"
               >
                 <X className="h-4 w-4" />
@@ -137,7 +137,7 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
               </a>
               <button
                 onClick={handleFileDelete}
-                className="bg-rose-500 text-white p-1 rounded-full absolute -top-2 -right-2 shadow-sm cursor-pointer"
+                className="bg-destructive text-white p-1 rounded-full absolute -top-2 -right-2 shadow-sm cursor-pointer"
                 type="button"
               >
                 <X className="h-4 w-4" />
@@ -152,8 +152,8 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
             render={() => (
               <FormItem>
                 <FormControl>
-                  <label className="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center cursor-pointer">
-                    <Plus className="text-white dark:text-[#313338]" />
+                  <label className="absolute top-7 left-7 h-10 w-10 bg-accent/80 hover:bg-accent/70 transition rounded-lg p-1 flex items-center justify-center cursor-pointer">
+                    <Paperclip className="text-accent-foreground" />
                     <Input
                       type="file"
                       className="hidden"
@@ -174,13 +174,13 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
                   <>
                     <Input
                       disabled={isLoading}
-                      className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                      placeholder={`Message ${
+                      className="text-md px-16 py-8 bg-input border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground"
+                      placeholder={`Написать ${
                         type === "conversation" ? name : "#" + name
                       }`}
                       {...field}
                     />
-                    <div className="absolute top-7 right-8">
+                    <div className="absolute top-8 right-8">
                       <EmojiPicker
                         onChange={(emoji: string) =>
                           field.onChange(`${field.value}${emoji}`)

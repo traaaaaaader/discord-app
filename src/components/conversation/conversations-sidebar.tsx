@@ -44,25 +44,31 @@ export const ConversationSidebar = ({
   }
 
   return (
-    <div className="flex flex-col h-full text-primary w-full dark:bg-[#2B2D31] bg-[#F2F3F5]">
-      <div className="flex justify-between px-4 mt-4 text-md font-semibold text-zinc-500 dark:text-zinc-400 ">
-        <p>Сообщения</p>
-        <ActionTooltip label="Create Conversation" side="top">
+    <div className="flex flex-col h-full text-primary w-full bg-card">
+      <div className="h-16 px-3 flex items-center justify-between text-lg font-semibold ">
+        Сообщения
+        <ActionTooltip label="Начать беседу" side="top">
           <button
             onClick={() => onOpen("createConversation")}
-            className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
+            className="cursor-pointer text-accent hover:text-accent/90 transition"
           >
-            <Plus className="h-4 w-4" />
+            <div
+              className="flex h-10 w-10 rounded-full
+            hover:rounded-2xl transition-all overflow-hidden
+            items-center justify-center bg-secondary hover:bg-accent"
+            >
+              <Plus className="hover:text-accent-foreground transition text-primary" />
+            </div>
           </button>
         </ActionTooltip>
       </div>
-      <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md my-2" />
+      <Separator className="bg-border rounded-md" />
       <ScrollArea className="flex-1 px-3">
         <div className="mt-2">
           {conversations?.map((conversation) => (
             <div
               key={conversation.id}
-              className="p-2 flex items-center text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 rounded-md cursor-pointer hover:dark:bg-[#3e41468d]"
+              className="p-2 flex items-center hover:bg-accent/10 rounded-md cursor-pointer text-foreground hover:text-accent"
               onClick={() => updateConversationId(conversation.id)}
             >
               <UserAvatar

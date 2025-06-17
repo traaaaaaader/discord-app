@@ -87,5 +87,5 @@ export const FileUpload = ({ value, onChange }: FileUploadProps) => {
     );
   }
 
-  return <Input type="file" onChange={handleFileChange} disabled={loading} />;
+  return <Input className="bg-input text-muted-foreground" type="file" onChange={handleFileChange} disabled={loading} />;
 };
