@@ -18,9 +18,9 @@
 
 ## Внешний вид
 
-<img src='./screenshots/text_channel.jpg' alt="Темная тема - текстовый канал" style="border: 2px solid  gray; border-radius:5px">
-<img src='./screenshots/voice_channel.jpg' alt="Темная тема - голосовой канал" style="border: 2px solid  gray; border-radius:5px">
-<img src='./screenshots/light_theme.jpg' alt="Светлая тема - модальное окно" style="border: 2px solid  gray; border-radius:5px">
+<kbd>![Темная тема - текстовый канал](./screenshots/text_channel.jpg)</kbd>
+<kbd>![Темная тема - голосовой канал](./screenshots/voice_channel.jpg)</kbd>
+<kbd>![Светлая тема - модальное окно](./screenshots/light_theme.jpg)</kbd>
 
 ## Основной функционал
 
