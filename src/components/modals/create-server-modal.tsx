@@ -118,7 +118,7 @@ export const CreateServerModal = () => {
                       <Input
                         disabled={isLoading}
                         className="bg-input border-0 focus-visible:ring-0 text-muted-foreground focus-visible:ring-offset-0"
-                        placeholder="Enter server name"
+                        placeholder="Введите название сервера"
                         {...field}
                       />
                     </FormControl>

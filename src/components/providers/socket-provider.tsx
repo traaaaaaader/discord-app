@@ -31,8 +31,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       transports: ["websocket"],
     });
 
-    console.log(socketInstance);
-
     socketInstance.on("connect", () => {
       setIsConected(true);
     });

@@ -10,10 +10,17 @@
 
 ## Содержание
 
-1. [Основной функционал](#основной-функционал)
-2. [Конфигурация](#конфигурация)
-3. [Установка и запуск](#установка-и-запуск)
-4. [TODO](#todo)
+1. [Внешний вид](#внешний-вид)
+2. [Основной функционал](#основной-функционал)
+3. [Конфигурация](#конфигурация)
+4. [Установка и запуск](#установка-и-запуск)
+5. [TODO](#todo)
+
+## Внешний вид
+
+<img src='./screenshots/text_channel.jpg' alt="Темная тема - текстовый канал" style="border: 2px solid  gray; border-radius:5px">
+<img src='./screenshots/voice_channel.jpg' alt="Темная тема - голосовой канал" style="border: 2px solid  gray; border-radius:5px">
+<img src='./screenshots/light_theme.jpg' alt="Светлая тема - модальное окно" style="border: 2px solid  gray; border-radius:5px">
 
 ## Основной функционал
 
